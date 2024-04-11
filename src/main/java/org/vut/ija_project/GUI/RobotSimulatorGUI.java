@@ -128,11 +128,11 @@ public class RobotSimulatorGUI extends Application {
             int x = Integer.parseInt(xFieldR.getText());
             int y = Integer.parseInt(yFieldR.getText());
             // Create the robot
-            Robot robot = ControlledRobot.create(room, new Position(x, y));
+            robot = ControlledRobot.create(room, new Position(x, y));
             room.addRobot(robot);
             // Draw the robot
             gc.setFill(Color.BLUE);
-            gc.fillOval(x, y, 10, 10);
+            gc.fillOval(x, y, 40, 40);
         });
 
         // For adding obstacle on the canvas
@@ -147,7 +147,7 @@ public class RobotSimulatorGUI extends Application {
             room.createObstacleAt(x, y);
             // Draw the obstacle
             gc.setFill(Color.RED);
-            gc.fillRect(x, y, 10, 10);
+            gc.fillRect(x, y, 40, 40);
         });
 
         startButton.setOnAction(event -> {
