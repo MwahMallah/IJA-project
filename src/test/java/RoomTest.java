@@ -1,9 +1,11 @@
-import org.junit.Assert;
-import org.vut.ija_project.Common.Position;
-import org.vut.ija_project.Environment.Environment;
-import org.vut.ija_project.Environment.Room;
-import org.vut.ija_project.Robot.ControlledRobot;
-import org.vut.ija_project.Robot.Robot;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.vut.ija_project.DataLayer.Common.Position;
+import org.vut.ija_project.DataLayer.Environment.Environment;
+import org.vut.ija_project.DataLayer.Environment.Room;
+import org.vut.ija_project.DataLayer.Robot.ControlledRobot;
+import org.vut.ija_project.DataLayer.Robot.Robot;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -19,7 +21,7 @@ public class RoomTest
     /**
      * Creates room, where all tests, are played.
      */
-    @org.junit.Before
+    @BeforeEach
     public void setUp() {
         Environment room = Room.create(5, 8);
 
@@ -36,28 +38,28 @@ public class RoomTest
         this.room = room;
     }
 
-    @org.junit.Test
+    @Test
     public void room_GetRobots() {
         List<Robot> robots = room.robots();
-        Assert.assertEquals("There is 2 robots", 2, robots.size());
+        Assertions.assertEquals(2, robots.size());
         robots.remove(0);
-        Assert.assertEquals("There is 2 robots", 2, room.robots().size());
+        Assertions.assertEquals(2, room.robots().size());
 
-        Assert.assertEquals("Robot 1 is at (4, 2)", r1, room.robots().get(0));
-        Assert.assertEquals("Robot 2 is at (4, 4)", r2, room.robots().get(1));
+        Assertions.assertEquals(r1, room.robots().get(0));
+        Assertions.assertEquals(r2, room.robots().get(1));
 
     }
 
-    @org.junit.Test
+    @Test
     public void room_AddRobot() {
         Position newPos = new Position(4, 5);
         Robot newRobot = ControlledRobot.create(this.room, newPos);
 
         List<Robot> robots = room.robots();
-        Assert.assertEquals("There is 3 robots now", 3, robots.size());
+        Assertions.assertEquals(3, robots.size());
     }
 
-    @org.junit.Test
+    @Test
     public void room_AddObstacle() {
         assertFalse(room.obstacleAt(3, 3)); // There should be no obstacle at (3, 3)
         room.createObstacleAt(3, 3);
@@ -67,7 +69,7 @@ public class RoomTest
         assertFalse(room.createObstacleAt(4, 2)); // There is a robot at (4, 2)
     }
 
-    @org.junit.Test
+    @Test
     public void room_RobotAt() {
         Position robot1Pos = new Position(4, 2);
         Position robot2Pos = new Position(4, 4);

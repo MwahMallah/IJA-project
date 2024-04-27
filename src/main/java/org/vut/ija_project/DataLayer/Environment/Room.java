@@ -1,9 +1,9 @@
-package org.vut.ija_project.Environment;
+package org.vut.ija_project.DataLayer.Environment;
 
-import org.vut.ija_project.Common.Observable;
-import org.vut.ija_project.Common.Position;
-import org.vut.ija_project.Obstacle.Obstacle;
-import org.vut.ija_project.Robot.Robot;
+import org.vut.ija_project.DataLayer.Common.Observable;
+import org.vut.ija_project.DataLayer.Common.Position;
+import org.vut.ija_project.DataLayer.Obstacle.Obstacle;
+import org.vut.ija_project.DataLayer.Robot.Robot;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,17 +1,13 @@
-import javafx.geometry.Pos;
-import org.vut.ija_project.Common.Position;
-import org.vut.ija_project.Environment.Environment;
-import org.vut.ija_project.Environment.Room;
-import org.vut.ija_project.Robot.ControlledRobot;
-import org.vut.ija_project.Robot.Robot;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.vut.ija_project.DataLayer.Common.Position;
+import org.vut.ija_project.DataLayer.Environment.Environment;
+import org.vut.ija_project.DataLayer.Environment.Room;
+import org.vut.ija_project.DataLayer.Robot.ControlledRobot;
+import org.vut.ija_project.DataLayer.Robot.Robot;
 
-import org.junit.Test;
-import org.junit.Assert;
-
-import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.vut.ija_project.Robot.ControlledRobot.State.MOVE_FORWARD;
 
 public class ControlledRobotTest
 {
@@ -20,7 +16,7 @@ public class ControlledRobotTest
     /**
      * Creates room, where all tests, are played.
      */
-    @org.junit.Before
+    @BeforeEach
     public void setUp() {
         // For controlledRobot_Moves
         Environment room = Room.create(5, 8);
@@ -39,58 +35,58 @@ public class ControlledRobotTest
 
     }
 
-    @org.junit.Test
+    @Test
     public void controlledRobot_Moves() {
         // Test for moving robot in the environment with obstacles
 
-        assertTrue(r1.canMove());
-        assertTrue(r2.canMove());
+        Assertions.assertTrue(r1.canMove());
+        Assertions.assertTrue(r2.canMove());
 
         Position p3 = new Position(3,4);
 
         // Set state directly in the test method
         ((ControlledRobot) r2).setState(ControlledRobot.State.MOVE_FORWARD);
         String strMove = "MOVE_FORWARD";
-        r2.updatePosition(strMove);
+        r2.updatePosition();
         assertEquals(p3, r2.getPosition());
 
         ((ControlledRobot) r2).setState(ControlledRobot.State.TURN_CLOCKWISE);
         String strTurn1 = "TURN_CLOCKWISE";
-        r2.updatePosition(strTurn1);
-        r2.updatePosition(strTurn1);
+        r2.updatePosition();
+        r2.updatePosition();
         ((ControlledRobot) r2).setState(ControlledRobot.State.MOVE_FORWARD);
-        r2.updatePosition(strMove);
-        r2.updatePosition(strMove);
-        r2.updatePosition(strMove);
+        r2.updatePosition();
+        r2.updatePosition();
+        r2.updatePosition();
         Position p6 = new Position(3,7);
         assertEquals(p6, r2.getPosition());
 
         // Set state directly in the test method
         ((ControlledRobot) r1).setState(ControlledRobot.State.TURN_CLOCKWISE);
         String strTurn = "TURN_CLOCKWISE";
-        r1.updatePosition(strTurn);
-        r1.updatePosition(strTurn);
+        r1.updatePosition();
+        r1.updatePosition();
         assertEquals(90, r1.angle()); // control if robot is turned by 45 degrees
 
         ((ControlledRobot) r1).setState(ControlledRobot.State.MOVE_FORWARD);
-        r1.updatePosition(strMove);
+        r1.updatePosition();
         Position p5 = new Position(4,3);
         assertEquals(p5, r1.getPosition());
 
         ((ControlledRobot) r1).setState(ControlledRobot.State.MOVE_FORWARD);
-        r1.updatePosition(strMove);
+        r1.updatePosition();
         Position p7 = new Position(4,4);
         assertEquals(p7, r1.getPosition());
 
         ((ControlledRobot) r1).setState(ControlledRobot.State.MOVE_FORWARD);
-        r1.updatePosition(strMove);
+        r1.updatePosition();
         Position p8 = new Position(4,5);
         assertEquals(p8, r1.getPosition());
 
     }
 
 
-    @org.junit.Test
+    @Test
     public void controlledRobot_ChecksObstacle() {
 
         // For controlledRobot_ChecksObstacle
@@ -105,20 +101,20 @@ public class ControlledRobotTest
         room1.createObstacleAt(1, 2);
         room1.createObstacleAt(1, 4);
 
-        assertTrue(room1.obstacleAt(p1));
-        assertTrue(room1.obstacleAt(p2));
+        Assertions.assertTrue(room1.obstacleAt(p1));
+        Assertions.assertTrue(room1.obstacleAt(p2));
 
         Robot r1 = ControlledRobot.create(room1, p1);
-        Assert.assertNull(r1); // robot cannot be created at position with obstacle
+        Assertions.assertNull(r1); // robot cannot be created at position with obstacle
 
         Robot r2 = ControlledRobot.create(room1, p3);
-        Assert.assertFalse("We have obstacle on this position",r2.canMove());
+        Assertions.assertFalse(r2.canMove());
 
         Robot r3 = ControlledRobot.create(room1, p4);
-        Assert.assertNotNull(r3); // robot can be created at position without obstacle
+        Assertions.assertNotNull(r3); // robot can be created at position without obstacle
 
         Robot r4 = ControlledRobot.create(room1, p4);
-        Assert.assertNull(r4); // robot can be created at position, where is already another robot
+        Assertions.assertNull(r4); // robot can be created at position, where is already another robot
 
     }
 

@@ -1,8 +1,8 @@
-package org.vut.ija_project.Environment;
+package org.vut.ija_project.DataLayer.Environment;
 
-import org.vut.ija_project.Common.Position;
-import org.vut.ija_project.Common.Observer;
-import org.vut.ija_project.Robot.Robot;
+import org.vut.ija_project.DataLayer.Common.Position;
+import org.vut.ija_project.DataLayer.Common.Observer;
+import org.vut.ija_project.DataLayer.Robot.Robot;
 
 import java.util.List;
 

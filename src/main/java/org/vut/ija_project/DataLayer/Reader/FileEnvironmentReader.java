@@ -1,16 +1,16 @@
-package org.vut.ija_project.Reader;
+package org.vut.ija_project.DataLayer.Reader;
 
-import org.vut.ija_project.Common.Position;
-import org.vut.ija_project.Environment.Environment;
+import org.vut.ija_project.DataLayer.Common.Position;
+import org.vut.ija_project.DataLayer.Robot.ControlledRobot;
+import org.vut.ija_project.DataLayer.Environment.Environment;
 import java.io.*;
 import java.util.Objects;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.vut.ija_project.Environment.Room;
-import org.vut.ija_project.Robot.AutonomousRobot;
-import org.vut.ija_project.Robot.ControlledRobot;
+import org.vut.ija_project.DataLayer.Environment.Room;
+import org.vut.ija_project.DataLayer.Robot.AutonomousRobot;
 
 public class FileEnvironmentReader implements EnvironmentReader
 {

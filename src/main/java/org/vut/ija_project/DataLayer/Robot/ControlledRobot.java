@@ -1,8 +1,8 @@
-package org.vut.ija_project.Robot;
+package org.vut.ija_project.DataLayer.Robot;
 
-import org.vut.ija_project.Common.Observer;
-import org.vut.ija_project.Common.Position;
-import org.vut.ija_project.Environment.Environment;
+import org.vut.ija_project.DataLayer.Common.Observer;
+import org.vut.ija_project.DataLayer.Common.Position;
+import org.vut.ija_project.DataLayer.Environment.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,6 @@ public class ControlledRobot implements Robot {
         MOVE_FORWARD,
         NOTHING
     }
-
 
     private ControlledRobot(Environment env, Position pos) {
         observers = new ArrayList<Observer>();

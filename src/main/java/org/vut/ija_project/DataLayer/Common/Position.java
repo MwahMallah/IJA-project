@@ -1,4 +1,4 @@
-package org.vut.ija_project.Common;
+package org.vut.ija_project.DataLayer.Common;
 
 /**
  * Class Represents Position in Environment

@@ -1,9 +1,8 @@
-package org.vut.ija_project.Reader;
+package org.vut.ija_project.DataLayer.Reader;
 
-import org.vut.ija_project.Environment.Environment;
+import org.vut.ija_project.DataLayer.Environment.Environment;
 
 import java.io.File;
-import java.io.IOException;
 
 public interface EnvironmentReader
 {

@@ -1,7 +1,7 @@
-package org.vut.ija_project.Robot;
+package org.vut.ija_project.DataLayer.Robot;
 
-import org.vut.ija_project.Common.Observable;
-import org.vut.ija_project.Common.Position;
+import org.vut.ija_project.DataLayer.Common.Observable;
+import org.vut.ija_project.DataLayer.Common.Position;
 
 public interface Robot extends Observable {
 
