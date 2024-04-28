@@ -43,9 +43,9 @@ public interface Environment extends Observer {
      */
     public boolean robotAt(Position pos);
 
-    int rows();
+    public int rows();
 
-    int cols();
+    public int cols();
 
-    List<Robot> robots();
+    public List<Robot> robots();
 }

@@ -98,6 +98,6 @@ public class Room implements Environment {
 
     @Override
     public void update(Observable observable) {
-
+        
     }
 }
