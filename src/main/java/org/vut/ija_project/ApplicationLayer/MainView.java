@@ -1,26 +1,20 @@
 package org.vut.ija_project.ApplicationLayer;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.transform.Affine;
 
+import org.vut.ija_project.ApplicationLayer.Canvas.CanvasView;
+import org.vut.ija_project.ApplicationLayer.SelectedView.SelectedView;
 import org.vut.ija_project.BusinessLayer.EnvironmentManager;
-import org.vut.ija_project.DataLayer.Common.Position;
+import org.vut.ija_project.DataLayer.Robot.Robot;
 
 public class MainView extends HBox
 {
     private EnvironmentManager environmentManager;
     private VBox leftSide;
-    private VBox rightSide;
+    private VBox centralSide;
+    private InformationView informationView;
     private CanvasView canvasView;
     private ButtonsView buttonsView;
 
@@ -29,22 +23,43 @@ public class MainView extends HBox
         this.environmentManager.addMainView(this);
 
         this.leftSide = new FormsView(environmentManager);
-        this.rightSide = new VBox(10);
+        this.centralSide = new VBox(10);
+        this.informationView = new InformationView(environmentManager);
 
         //width is 20% left and 80% right
         leftSide.maxWidthProperty().bind(this.widthProperty().multiply(1/5f));
-        rightSide.maxWidthProperty().bind(this.widthProperty().multiply(4/5f));
+        centralSide.maxWidthProperty().bind(this.widthProperty().multiply(3/5f));
+        informationView.maxWidthProperty().bind(this.widthProperty().multiply(1/5f));
 
         canvasView = new CanvasView(environmentManager, this);
         buttonsView = new ButtonsView(environmentManager);
-        this.rightSide.getChildren().addAll(buttonsView, canvasView);
+        this.centralSide.getChildren().addAll(buttonsView, canvasView);
 
-        this.getChildren().addAll(leftSide, rightSide);
+        this.getChildren().addAll(leftSide, centralSide, informationView);
         HBox.setHgrow(leftSide, Priority.ALWAYS);
-        HBox.setHgrow(rightSide, Priority.ALWAYS);
+        HBox.setHgrow(centralSide, Priority.ALWAYS);
+        HBox.setHgrow(informationView, Priority.ALWAYS);
     }
+
+
+    public void setSelected(SelectedView selectedView) {informationView.setSelected(selectedView);}
 
     public void update() {
         canvasView.update();
+        informationView.update();
+    }
+
+    public void reset() {
+        canvasView.reset();
+        informationView.setSelected(null);
+    }
+
+    public void addRobot(Robot robot) {
+        canvasView.addRobot(robot);
+    }
+
+    public void deleteRobot(Robot robot) {
+        canvasView.removeRobot(robot);
+        informationView.setSelected(null);
     }
 }

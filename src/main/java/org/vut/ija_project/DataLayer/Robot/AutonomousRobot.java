@@ -1,5 +1,6 @@
 package org.vut.ija_project.DataLayer.Robot;
 
+import org.vut.ija_project.Common.ObjectConfiguration;
 import org.vut.ija_project.DataLayer.Common.Observer;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Environment.Environment;
@@ -8,12 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AutonomousRobot implements Robot {
+    private final double robotSize = 1;
+    private double velocity;
     List<Observer> observers;
     private final Environment env;
     private Position pos;
     private int angle;
     private int turningAngle;
-    private int maxDistanceFromBlock;
+    private double maxDistanceFromBlock;
     private Direction turningDirection;
 
     public enum Direction {
@@ -21,13 +24,14 @@ public class AutonomousRobot implements Robot {
         CLOCKWISE
     }
 
-    public AutonomousRobot(Environment env, Position pos) {
+    public AutonomousRobot(Environment env, Position pos, int angle) {
         observers = new ArrayList<Observer>();
         this.env = env;
         this.pos = pos;
-        this.angle = 0;
-        this.maxDistanceFromBlock = 1;
-        this.turningAngle = 45;
+        this.angle = angle;
+        this.velocity = 0.1;
+        this.maxDistanceFromBlock = this.velocity;
+        this.turningAngle = 5;
         this.turningDirection = Direction.CLOCKWISE;
         addObserver(env);
     }
@@ -36,7 +40,7 @@ public class AutonomousRobot implements Robot {
         if (env == null || pos == null) return null;
         if (env.obstacleAt(pos) || env.robotAt(pos)) return null;
 
-        AutonomousRobot newRobot = new AutonomousRobot(env, pos);
+        AutonomousRobot newRobot = new AutonomousRobot(env, pos, 0);
         env.addRobot(newRobot);
         return newRobot;
     }
@@ -73,18 +77,19 @@ public class AutonomousRobot implements Robot {
     @Override
     public boolean canMove() {
         Position targetPos = getTargetPosition();
-        return env.containsPosition(targetPos) && !env.obstacleAt(targetPos) && !env.robotAt(targetPos);
+        return env.containsPosition(targetPos)
+                && !env.obstacleAt(targetPos) && !env.robotAt(targetPos, this);
     }
 
     private Position getTargetPosition() {
         // trigonometric angle is rotating counter-clockwise => multiply by -1
         // angle 0 is angle 90 on trigonometric circular => add 90
-        //we need to multiply by maxDistanceFromBlock to check for desired position of robot
+        // we need to multiply by maxDistanceFromBlock to check for desired position of robot
         double angleRadians = Math.toRadians(-angle + 90);
-        int deltaX = (int) Math.round(Math.cos(angleRadians)) * maxDistanceFromBlock;
-        int deltaY = (int) Math.round(Math.sin(angleRadians)) * (-1) * maxDistanceFromBlock;
+        double deltaX = Math.cos(angleRadians) * velocity;
+        double deltaY = Math.sin(angleRadians) * (-1) * velocity;
 
-        return new Position(deltaY + pos.getRow(), deltaX + pos.getCol());
+        return new Position(pos.getY() + deltaY, pos.getX() + deltaX);
     }
 
     public void setTurningAngle(int newTurningAngle) {
@@ -107,12 +112,36 @@ public class AutonomousRobot implements Robot {
     @Override
     public void updatePosition() {
         if (!move()) turn();
+
+        System.out.println("Robot's position: " + pos);
         notifyObservers();
     }
 
     @Override
     public Robot copy(Environment env) {
-        return new AutonomousRobot(env, this.pos);
+        return new AutonomousRobot(env, this.pos, this.angle);
+    }
+
+    @Override
+    public double getVelocity() {return velocity;}
+
+    @Override
+    public double getRotationAngle() {
+        return turningAngle;
+    }
+
+    @Override
+    public void setConfiguration(ObjectConfiguration configuration) {
+        pos = new Position(configuration.newY, configuration.newX);
+        angle = configuration.newAngle;
+        velocity = configuration.newVelocity;
+        maxDistanceFromBlock = velocity;
+        turningAngle = configuration.newRotationAngle;
+    }
+
+    @Override
+    public double getRobotSize() {
+        return this.robotSize;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.vut.ija_project.DataLayer.Robot;
 
+import org.vut.ija_project.Common.ObjectConfiguration;
 import org.vut.ija_project.DataLayer.Common.Observable;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Environment.Environment;
@@ -29,4 +30,12 @@ public interface Robot extends Observable {
 
 
     public Robot copy(Environment env);
+
+    public double getVelocity();
+
+    public double getRotationAngle();
+
+    public void setConfiguration(ObjectConfiguration configuration);
+
+    public double getRobotSize();
 }

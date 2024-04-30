@@ -1,6 +1,7 @@
 package org.vut.ija_project.BusinessLayer;
 
 import org.vut.ija_project.ApplicationLayer.MainView;
+import org.vut.ija_project.Common.ObjectConfiguration;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Environment.Environment;
 import org.vut.ija_project.DataLayer.Obstacle.Obstacle;
@@ -30,8 +31,8 @@ public class EnvironmentManager
         this.mainView = mainView;
     }
 
-    public void addRobot(int row, int col, String type) {
-        Position newRobotPos = new Position(row, col);
+    public void addRobot(double y, double x, String type) {
+        Position newRobotPos = new Position(y, x);
         Robot newRobot = null;
 
         if (type.equals("Automated")) {
@@ -48,11 +49,11 @@ public class EnvironmentManager
         //if we want to add robot, make current environment position initial
         this.intitialEnvironment = this.currEnvironment.copy();
 
-        mainView.update();
+        mainView.addRobot(newRobot);
     }
 
-    public void addObstacle(int row, int col) {
-        boolean created = this.currEnvironment.createObstacleAt(row, col);
+    public void addObstacle(double y, double x) {
+        boolean created = this.currEnvironment.createObstacleAt(y, x);
 
         if (!created) {
             System.out.println("Obstacle is not created");
@@ -67,12 +68,12 @@ public class EnvironmentManager
 
     public void simulationReset() {
         this.currEnvironment = this.intitialEnvironment.copy();
+        mainView.reset();
         mainView.update();
     }
 
     public void simulationStep() {
         List<Robot> robots = this.currEnvironment.robots();
-
 
         for (var robot : robots) {
             robot.updatePosition();
@@ -89,13 +90,27 @@ public class EnvironmentManager
         return this.currEnvironment.robots();
     }
 
-    public int getRows() {
-        return this.currEnvironment.rows();
+    public double getHeight() {
+        return this.currEnvironment.height();
     }
 
-    public int getCols() {
-        return  this.currEnvironment.cols();
+    public double getWidth() {
+        return this.currEnvironment.width();
     }
 
     public List<Obstacle> getObstacles() {return this.currEnvironment.obstacles();}
+
+    public void deleteRobot(Robot robot) {
+        this.currEnvironment.removeRobot(robot);
+
+        this.intitialEnvironment = this.currEnvironment.copy();
+        mainView.deleteRobot(robot);
+    }
+
+    public void updateRobot(Robot robot, ObjectConfiguration configuration) {
+        robot.setConfiguration(configuration);
+
+        this.intitialEnvironment = this.currEnvironment.copy();
+        mainView.update();
+    }
 }

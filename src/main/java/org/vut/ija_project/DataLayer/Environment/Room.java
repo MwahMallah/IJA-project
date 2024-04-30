@@ -9,14 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Room implements Environment {
-    private int rows;
-    private int cols;
+    private double roomHeight;
+    private double roomWidth;
     private List<Robot> robotsInRoom;
     private List<Obstacle> obstaclesInRoom;
 
-    private Room(int rows, int cols) {
-        this.rows       = rows;
-        this.cols       = cols;
+    private Room(double roomHeight, double roomWidth) {
+        this.roomHeight = roomHeight;
+        this.roomWidth  = roomWidth;
         robotsInRoom    = new ArrayList<Robot>();
         obstaclesInRoom = new ArrayList<Obstacle>();
     }
@@ -41,12 +41,12 @@ public class Room implements Environment {
 
     @Override
     public boolean containsPosition(Position pos) {
-        return pos.getCol() < cols && pos.getRow() < rows && pos.getCol() >= 0 && pos.getRow() >= 0;
+        return pos.getX() <= roomWidth && pos.getY() <= roomHeight && pos.getX() >= 0 && pos.getY() >= 0;
     }
 
     @Override
-    public boolean createObstacleAt(int row, int col) {
-        Position targetPos = new Position(row, col);
+    public boolean createObstacleAt(double y, double x) {
+        Position targetPos = new Position(y, x);
         if (!containsPosition(targetPos) || obstacleAt(targetPos) || robotAt(targetPos)) {
             return false;
         }
@@ -64,7 +64,14 @@ public class Room implements Environment {
         if (!containsPosition(pos)) return false;
 
         for (Obstacle obstacle : obstaclesInRoom) {
-            if (obstacle.getPosition().equals(pos)) return true;
+            boolean withinHorizontalBounds =
+                    pos.getX() <= (obstacle.getPosition().getX() + obstacle.getObstacleSize() / 2)
+                    && pos.getX() >= (obstacle.getPosition().getX() - obstacle.getObstacleSize() / 2);
+            boolean withinVerticalBounds =
+                    pos.getY() <= (obstacle.getPosition().getY() + obstacle.getObstacleSize() / 2)
+                    && pos.getY() >= (obstacle.getPosition().getY() - obstacle.getObstacleSize() / 2);
+
+            if (withinHorizontalBounds && withinVerticalBounds) return true;
         }
 
         return false;
@@ -75,20 +82,47 @@ public class Room implements Environment {
         if (!containsPosition(pos)) return false;
 
         for (Robot robot : robotsInRoom) {
-            if (robot.getPosition().equals(pos)) return true;
+            boolean withinHorizontalBounds =
+                    pos.getX() <= (robot.getPosition().getX() + robot.getRobotSize() / 2)
+                            && pos.getX() >= (robot.getPosition().getX() - robot.getRobotSize() / 2);
+            boolean withinVerticalBounds =
+                    pos.getY() <= (robot.getPosition().getY() + robot.getRobotSize() / 2)
+                            && pos.getY() >= (robot.getPosition().getY() - robot.getRobotSize() / 2);
+
+            if (withinHorizontalBounds && withinVerticalBounds) return true;
         }
 
         return false;
     }
 
     @Override
-    public int rows() {
-        return rows;
+    public boolean robotAt(Position pos, Robot excludingRobot) {
+        if (!containsPosition(pos)) return false;
+
+        for (Robot robot : robotsInRoom) {
+            if (robot == excludingRobot) continue;
+
+            boolean withinHorizontalBounds =
+                    pos.getX() <= (robot.getPosition().getX() + robot.getRobotSize() / 2)
+                            && pos.getX() >= (robot.getPosition().getX() - robot.getRobotSize() / 2);
+            boolean withinVerticalBounds =
+                    pos.getY() <= (robot.getPosition().getY() + robot.getRobotSize() / 2)
+                            && pos.getY() >= (robot.getPosition().getY() - robot.getRobotSize() / 2);
+
+            if (withinHorizontalBounds && withinVerticalBounds) return true;
+        }
+
+        return false;
     }
 
     @Override
-    public int cols() {
-        return cols;
+    public double height() {
+        return roomHeight;
+    }
+
+    @Override
+    public double width() {
+        return roomWidth;
     }
 
     @Override
@@ -106,17 +140,22 @@ public class Room implements Environment {
 
     @Override
     public Environment copy() {
-        Environment newRoom = new Room(this.rows, this.cols);
+        Environment newRoom = new Room(this.roomHeight, this.roomWidth);
 
         for (var robot: this.robotsInRoom) {
             newRoom.addRobot(robot.copy(newRoom));
         }
 
         for (var obstacle: this.obstaclesInRoom) {
-            newRoom.createObstacleAt(obstacle.getPosition().getRow(),
-                    obstacle.getPosition().getCol());
+            newRoom.createObstacleAt(obstacle.getPosition().getY(),
+                    obstacle.getPosition().getX());
         }
 
         return newRoom;
+    }
+
+    @Override
+    public void removeRobot(Robot robot) {
+        robotsInRoom.remove(robot);
     }
 }

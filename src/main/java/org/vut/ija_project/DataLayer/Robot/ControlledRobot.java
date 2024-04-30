@@ -1,5 +1,6 @@
 package org.vut.ija_project.DataLayer.Robot;
 
+import org.vut.ija_project.Common.ObjectConfiguration;
 import org.vut.ija_project.DataLayer.Common.Observer;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Environment.Environment;
@@ -67,7 +68,7 @@ public class ControlledRobot implements Robot {
         int deltaX = (int) Math.round(Math.cos(angleRadians));
         int deltaY = (int) Math.round(Math.sin(angleRadians)) * (-1);
 
-        return new Position(deltaY + pos.getRow(), deltaX + pos.getCol());
+        return new Position(deltaY + pos.getY(), deltaX + pos.getX());
     }
 
     @Override
@@ -95,6 +96,27 @@ public class ControlledRobot implements Robot {
     @Override
     public Robot copy(Environment env) {
         return new ControlledRobot(env, this.pos);
+    }
+
+    //TODO: change velocity
+    @Override
+    public double getVelocity() {
+        return 0;
+    }
+
+    @Override
+    public double getRotationAngle() {
+        return 0;
+    }
+
+    @Override
+    public void setConfiguration(ObjectConfiguration configuration) {
+
+    }
+
+    @Override
+    public double getRobotSize() {
+        return 0;
     }
 
     public void setState(State state) {

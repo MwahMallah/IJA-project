@@ -70,15 +70,15 @@ public class FormsView extends VBox {
     }
 
     private void addObstacle() {
-        int x = Integer.parseInt(xObstaclePosField.getText());
-        int y = Integer.parseInt(yObstaclePosField.getText());
+        double x = Double.parseDouble(xObstaclePosField.getText());
+        double y = Double.parseDouble(yObstaclePosField.getText());
 
         environmentManager.addObstacle(y, x);
     }
 
     private void addRobot() {
-        int x = Integer.parseInt(xRobotPosField.getText());
-        int y = Integer.parseInt(yRobotPosField.getText());
+        double x = Double.parseDouble(xRobotPosField.getText());
+        double y = Double.parseDouble(yRobotPosField.getText());
 
         environmentManager.addRobot(y, x, "Automated");
     }

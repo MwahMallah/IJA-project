@@ -1,44 +1,56 @@
-package org.vut.ija_project.ApplicationLayer;
+package org.vut.ija_project.ApplicationLayer.Canvas;
 
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Glow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Affine;
 import javafx.scene.image.Image;
 
+import org.vut.ija_project.ApplicationLayer.MainView;
+import org.vut.ija_project.ApplicationLayer.SelectedView.SelectedView;
+import org.vut.ija_project.ApplicationLayer.SelectedView.SelectedViewFactory;
 import org.vut.ija_project.BusinessLayer.EnvironmentManager;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Obstacle.Obstacle;
 import org.vut.ija_project.DataLayer.Robot.Robot;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 public class CanvasView extends HBox {
-    private Affine affine;
+    private final MainView mainView;
     private Canvas canvas;
-    private int canvasWidth = 900;
-    private int canvasHeight = 600;
+    protected int canvasWidth = 900;
+    protected int canvasHeight = 600;
     private GraphicsContext gc;
     private EnvironmentManager environmentManager;
-    private Image robotImage;
     private Image obstacleImage;
     private int previousRow;
     private int previousCol;
+    private double cellWidth;
+    private double cellHeight;
+    private List<RobotView> robotViewList;
 
     public CanvasView(EnvironmentManager environmentManager, MainView mainView) {
-        robotImage = new Image(getClass().getResourceAsStream("/insect.png"));
+        robotViewList = new ArrayList<RobotView>();
         obstacleImage = new Image(getClass().getResourceAsStream("/bush.png"));
 
         this.environmentManager = environmentManager;
+        this.mainView = mainView;
         this.setSpacing(10);
         // Make canvas
         canvas = new Canvas(canvasWidth, canvasHeight);
+        this.cellWidth = canvasWidth / (environmentManager.getWidth() + 1);
+        this.cellHeight = canvasHeight / (environmentManager.getHeight() + 1);
+
         canvas.setOnMouseMoved(this::handleMove);
         canvas.setOnMouseEntered(this::handleEntering);
         canvas.setOnMouseExited(this::handleExit);
+        canvas.setOnMouseClicked(this::handleClick);
 
         gc = canvas.getGraphicsContext2D();
         eraseObjects();
@@ -47,24 +59,35 @@ public class CanvasView extends HBox {
         this.setAlignment(Pos.CENTER);
     }
 
+    private void handleClick(MouseEvent mouseEvent) {
+        SelectedView selectedView = null;
+        RobotView selectedRobotView = null;
+
+        robotViewList.forEach(robotView -> {robotView.setSelected(false);});
+        for (var robotView : robotViewList) {
+            if (robotView.isClicked(mouseEvent.getX(), mouseEvent.getY())) {
+                selectedRobotView = robotView; break;
+            }
+        }
+
+        if (selectedRobotView != null) {
+            selectedRobotView.setSelected(true);
+            selectedView = SelectedViewFactory.create(selectedRobotView, environmentManager);
+        }
+
+        mainView.setSelected(selectedView);
+    }
+
     private void handleExit(MouseEvent mouseEvent) {
         update();
     }
 
     private void handleEntering(MouseEvent mouseEvent) {
-        double cellWidth = canvasWidth / (double) environmentManager.getCols();
-        double cellHeight = canvasHeight / (double) environmentManager.getRows();
-
         previousCol = (int) (mouseEvent.getX() / cellWidth);
         previousRow = (int) (mouseEvent.getY() / cellHeight);
-
-        System.out.println("Mouse entered");
     }
 
     private void handleMove(MouseEvent mouseEvent) {
-        double cellWidth = canvasWidth / (double) environmentManager.getCols();
-        double cellHeight = canvasHeight / (double) environmentManager.getRows();
-
         int currCol = (int) (mouseEvent.getX() / cellWidth);
         int currRow = (int) (mouseEvent.getY() / cellHeight);
 
@@ -90,25 +113,28 @@ public class CanvasView extends HBox {
 
     private void eraseObjects() {
         gc.setFill(Color.LIGHTGRAY);
+
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         gc.setLineWidth(0.2);
-        for (int x = 0; x <= canvasWidth; x += canvasWidth / environmentManager.getCols()) {
-            gc.strokeLine(x, 0, x, canvasHeight);
+        for (int x = 0; x <= environmentManager.getWidth() + 1; x++) {
+            double xPos = x * cellWidth;
+            gc.strokeLine(xPos, 0, xPos, canvasHeight);
         }
 
-        for (int y = 0; y <= canvasHeight; y += canvasHeight / environmentManager.getRows()) {
-            gc.strokeLine(0, y, canvasWidth, y);
+        // Draw horizontal lines (rows)
+        for (int y = 0; y <= environmentManager.getHeight() + 1; y++) {
+            double yPos = y * cellHeight;
+            gc.strokeLine(0, yPos, canvasWidth, yPos);
         }
     }
 
-    protected void update() {
-        var robots = environmentManager.getRobots();
+    public void update() {
         var obstacles = environmentManager.getObstacles();
         eraseObjects();
 
-        for (var robot : robots) {
-            drawRobot(robot);
+        for (var robotView : robotViewList) {
+            robotView.update();
         }
 
         for (var obstacle : obstacles) {
@@ -118,12 +144,10 @@ public class CanvasView extends HBox {
 
     private void drawObstacle(Obstacle obstacle) {
         Position obstaclePos = obstacle.getPosition();
-        double cellWidth = canvasWidth / (double) environmentManager.getCols();
-        double cellHeight = canvasHeight / (double) environmentManager.getRows();
 
         // top-left pixel coordinates for the given obstacle's position
-        double pixelX = cellWidth  * obstaclePos.getCol();
-        double pixelY = cellHeight * obstaclePos.getRow();
+        double pixelX = cellWidth  * obstaclePos.getX();
+        double pixelY = cellHeight * obstaclePos.getY();
 
         double imageScaleX = cellWidth / obstacleImage.getWidth();
         double imageScaleY = cellHeight / obstacleImage.getHeight();
@@ -139,40 +163,39 @@ public class CanvasView extends HBox {
         gc.drawImage(obstacleImage, pixelX + offsetX, pixelY + offsetY, scaledImageWidth, scaledImageHeight);
     }
 
-    private void drawRobot(Robot robot) {
-        Position robotPos = robot.getPosition();
-
-        double cellWidth  = canvasWidth  / (double) environmentManager.getCols();
-        double cellHeight = canvasHeight / (double) environmentManager.getRows();
-        // Calculate the center of the cell where the image will be placed
-        double cellCenterX = (robotPos.getCol() + 0.5) * cellWidth;
-        double cellCenterY = (robotPos.getRow() + 0.5) * cellHeight;
-        // top-left pixel coordinates for the given robot's position
-        double pixelX = cellWidth  * robotPos.getCol();
-        double pixelY = cellHeight * robotPos.getRow();
-
-        double imageScaleX = cellWidth / robotImage.getWidth();
-        double imageScaleY = cellHeight / robotImage.getHeight();
-        double scaleFactor = Math.min(imageScaleY, imageScaleX);
-
-        // Center the image in the cell by offsetting the position
-        // by half the difference of the cell size and the image size (after scaling)
-        double scaledImageWidth = robotImage.getWidth() * scaleFactor;
-        double scaledImageHeight = robotImage.getHeight() * scaleFactor;
-        double offsetX = (cellWidth - scaledImageWidth) / 2;
-        double offsetY = (cellHeight - scaledImageHeight) / 2;
-
-        // Save context
-        gc.save();
-        // Translate the context to the center of the image for rotation
-        gc.translate(cellCenterX, cellCenterY);
-        // Rotate context
-        gc.rotate(robot.angle());
-        // Translate back from the center
-        gc.translate(-cellCenterX, -cellCenterY);
-        // Draw the image with the transformation applied
-        gc.drawImage(robotImage, pixelX + offsetX, pixelY + offsetY, scaledImageWidth, scaledImageHeight);
-        // Restore context
-        gc.restore();
+    public void addRobot(Robot robot) {
+        var newRobotView = new RobotView(robot, this, environmentManager);
+        robotViewList.add(newRobotView);
+        update();
     }
+
+    public void removeRobot(Robot robot) {
+        Optional<RobotView> robotViewToRemoveOptional = robotViewList.stream()
+                .filter(r -> r.getRobot() == robot)
+                .findFirst();
+
+        if (robotViewToRemoveOptional.isPresent()) {
+            RobotView robotViewToRemove = robotViewToRemoveOptional.get();
+            robotViewList.remove(robotViewToRemove);
+        } else {
+            System.out.println("Can't be here (I hope)");
+        }
+        update();
+    }
+
+    public void reset() {
+        robotViewList = new ArrayList<RobotView>();
+        List<Robot> robots = this.environmentManager.getRobots();
+
+        for (var robot : robots) {
+            addRobot(robot);
+        }
+    }
+
+    public GraphicsContext getContext() {
+        return gc;
+    }
+
+    public double getCellWidth() {return cellWidth;}
+    public double getCellHeight() {return cellHeight;}
 }

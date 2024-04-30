@@ -10,7 +10,7 @@ public class Simulator {
     private Timeline timeline;
     public Simulator(EnvironmentManager environmentManager) {
         this.environmentManager = environmentManager;
-        this.timeline = new Timeline(new KeyFrame(Duration.millis(100), this::step));
+        this.timeline = new Timeline(new KeyFrame(Duration.millis(20), this::step));
         this.timeline.setCycleCount(Timeline.INDEFINITE);
     }
 

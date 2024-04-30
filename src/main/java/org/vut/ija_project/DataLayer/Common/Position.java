@@ -4,25 +4,23 @@ package org.vut.ija_project.DataLayer.Common;
  * Class Represents Position in Environment
  */
 public class Position {
-    private final int row;
-    private final int col;
+    private final double y;
+    private final double x;
 
-    public Position(int row, int col) {
-        this.row = row;
-        this.col = col;
+    public Position(double y, double x) {
+        this.y = y;
+        this.x = x;
     }
 
-    public int getRow() {
-        return row;
-    }
+    public double getY() { return y; }
 
-    public int getCol() {
-        return col;
+    public double getX() {
+        return x;
     }
 
     @Override
     public String toString() {
-        return String.format("(%d, %d)", row, col);
+        return String.format("(%f, %f)", y, x);
     }
 
     @Override
@@ -33,14 +31,15 @@ public class Position {
         }
 
         Position other = (Position) o;
-        return row == other.row && col == other.col;
+
+        return DoubleUtils.nearlyEqual(y, other.y) && DoubleUtils.nearlyEqual(x, other.x);
     }
 
     @Override
     public int hashCode() {
         //multiply column by 31 here, so we could differ
         //(2, 1) from (1, 2)
-        return Integer.hashCode(col) * 31 + Integer.hashCode(col);
+        return Double.hashCode(x) * 31 + Double.hashCode(x);
     }
 
 }

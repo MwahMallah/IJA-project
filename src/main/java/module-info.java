@@ -9,4 +9,8 @@ module org.vut.ija_project {
     
     exports org.vut.ija_project.ApplicationLayer;
     opens org.vut.ija_project.ApplicationLayer to javafx.fxml;
+    exports org.vut.ija_project.ApplicationLayer.Canvas;
+    opens org.vut.ija_project.ApplicationLayer.Canvas to javafx.fxml;
+    exports org.vut.ija_project.ApplicationLayer.SelectedView;
+    opens org.vut.ija_project.ApplicationLayer.SelectedView to javafx.fxml;
 }

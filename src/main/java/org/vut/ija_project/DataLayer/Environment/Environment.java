@@ -24,29 +24,28 @@ public interface Environment extends Observer {
      * Creates obstacle at given position
      * @return success of operation
      */
-    public boolean createObstacleAt(int row, int col);
+    public boolean createObstacleAt(double y, double x);
 
     /*
      * Checks if there is obstacle at this position
      * @return success of operation
      */
     public boolean obstacleAt(int row, int col);
-
     /*
      * Checks if there is obstacle at this position
      * @return success of operation
      */
     public boolean obstacleAt(Position pos);
-
     /*
      * Checks if there is robot this at position
      * @return success of operation
      */
     public boolean robotAt(Position pos);
-    public int rows();
-    public int cols();
+    public boolean robotAt(Position pos, Robot excludingRobot);
+    public double height();
+    public double width();
     public List<Robot> robots();
     public List<Obstacle> obstacles();
     public Environment copy();
-
+    public void removeRobot(Robot robot);
 }
