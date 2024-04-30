@@ -2,6 +2,7 @@ package org.vut.ija_project.DataLayer.Environment;
 
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Common.Observer;
+import org.vut.ija_project.DataLayer.Obstacle.Obstacle;
 import org.vut.ija_project.DataLayer.Robot.Robot;
 
 import java.util.List;
@@ -42,10 +43,10 @@ public interface Environment extends Observer {
      * @return success of operation
      */
     public boolean robotAt(Position pos);
-
     public int rows();
-
     public int cols();
-
     public List<Robot> robots();
+    public List<Obstacle> obstacles();
+    public Environment copy();
+
 }

@@ -97,7 +97,26 @@ public class Room implements Environment {
     }
 
     @Override
+    public List<Obstacle> obstacles() {return new ArrayList<Obstacle>(obstaclesInRoom);}
+
+    @Override
     public void update(Observable observable) {
-        
+
+    }
+
+    @Override
+    public Environment copy() {
+        Environment newRoom = new Room(this.rows, this.cols);
+
+        for (var robot: this.robotsInRoom) {
+            newRoom.addRobot(robot.copy(newRoom));
+        }
+
+        for (var obstacle: this.obstaclesInRoom) {
+            newRoom.createObstacleAt(obstacle.getPosition().getRow(),
+                    obstacle.getPosition().getCol());
+        }
+
+        return newRoom;
     }
 }

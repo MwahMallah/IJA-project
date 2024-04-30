@@ -111,6 +111,11 @@ public class AutonomousRobot implements Robot {
     }
 
     @Override
+    public Robot copy(Environment env) {
+        return new AutonomousRobot(env, this.pos);
+    }
+
+    @Override
     public void addObserver(Observer observer) {
         observers.add(observer);
     }

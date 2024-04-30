@@ -1,5 +1,6 @@
 package org.vut.ija_project.BusinessLayer;
 
+import org.vut.ija_project.ApplicationLayer.MainView;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Environment.Environment;
 import org.vut.ija_project.DataLayer.Obstacle.Obstacle;
@@ -16,49 +17,85 @@ import java.util.List;
  */
 public class EnvironmentManager
 {
-    private final Environment environment;
+    private MainView mainView;
+    private Environment currEnvironment;
+    private Environment intitialEnvironment;
 
     public EnvironmentManager(Environment environment) {
-        this.environment = environment;
+        this.intitialEnvironment = environment;
+        this.currEnvironment = this.intitialEnvironment.copy();
     }
 
-    public void AddRobot(int row, int col, String type) {
+    public void addMainView(MainView mainView) {
+        this.mainView = mainView;
+    }
+
+    public void addRobot(int row, int col, String type) {
         Position newRobotPos = new Position(row, col);
         Robot newRobot = null;
 
         if (type.equals("Automated")) {
-            newRobot = AutonomousRobot.create(environment, newRobotPos);
+            newRobot = AutonomousRobot.create(currEnvironment, newRobotPos);
         } else if (type.equals("Controlled")) {
-            newRobot = ControlledRobot.create(environment, newRobotPos);
+            newRobot = ControlledRobot.create(currEnvironment, newRobotPos);
         }
 
         if (newRobot == null) {
-            System.out.println("here");
+            System.out.println("Robot is not created");
             throw new RuntimeException("Invalid position");
         }
+
+        //if we want to add robot, make current environment position initial
+        this.intitialEnvironment = this.currEnvironment.copy();
+
+        mainView.update();
     }
 
-    public void AddObstacle(Obstacle obstacle) {
+    public void addObstacle(int row, int col) {
+        boolean created = this.currEnvironment.createObstacleAt(row, col);
 
+        if (!created) {
+            System.out.println("Obstacle is not created");
+            throw new RuntimeException("Invalid position");
+        }
+
+        //if we want to add obstacle, make current environment position initial
+        this.intitialEnvironment = this.currEnvironment.copy();
+
+        mainView.update();
     }
 
-    public void SimulationStep() {
-        List<Robot> robots = this.environment.robots();
+    public void simulationReset() {
+        this.currEnvironment = this.intitialEnvironment.copy();
+        mainView.update();
+    }
+
+    public void simulationStep() {
+        List<Robot> robots = this.currEnvironment.robots();
+
 
         for (var robot : robots) {
             robot.updatePosition();
         }
+
+        mainView.update();
     }
 
-    public List<Robot> GetRobots() {
-        return this.environment.robots();
+    public Simulator getSimulator() {
+        return new Simulator(this);
+    }
+
+    public List<Robot> getRobots() {
+        return this.currEnvironment.robots();
     }
 
     public int getRows() {
-        return this.environment.rows();
+        return this.currEnvironment.rows();
     }
 
     public int getCols() {
-        return  this.environment.cols();
+        return  this.currEnvironment.cols();
     }
+
+    public List<Obstacle> getObstacles() {return this.currEnvironment.obstacles();}
 }

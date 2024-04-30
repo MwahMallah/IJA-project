@@ -10,9 +10,8 @@ import org.vut.ija_project.DataLayer.Environment.Room;
 public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
-        Environment room = Room.create(10, 10);
+        Environment room = Room.create(10, 15);
         EnvironmentManager manager = new EnvironmentManager(room);
-
         MainView mainView = new MainView(manager);
 
         Scene scene = new Scene(mainView, 1200, 700);

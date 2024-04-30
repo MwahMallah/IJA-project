@@ -92,6 +92,11 @@ public class ControlledRobot implements Robot {
         }
     }
 
+    @Override
+    public Robot copy(Environment env) {
+        return new ControlledRobot(env, this.pos);
+    }
+
     public void setState(State state) {
         currState = state;
     }
