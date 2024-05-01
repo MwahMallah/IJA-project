@@ -66,13 +66,6 @@ public class SelectedViewControlledRobot extends SelectedView {
     private void setupKeyHandlers() {
         this.setFocusTraversable(true);
 
-        //if selected view is chosen, never give focus to any other component
-        this.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-            if (!isNowFocused) {
-                Platform.runLater(this::requestFocus);
-            }
-        });
-
         this.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case LEFT -> handleCounterClockwiseTurn();

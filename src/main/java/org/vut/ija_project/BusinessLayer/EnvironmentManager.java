@@ -4,11 +4,13 @@ import org.vut.ija_project.ApplicationLayer.MainView;
 import org.vut.ija_project.Common.ObjectConfiguration;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Environment.Environment;
+import org.vut.ija_project.DataLayer.FileReader.FileEnvironmentReader;
 import org.vut.ija_project.DataLayer.Obstacle.Obstacle;
 import org.vut.ija_project.DataLayer.Robot.AutonomousRobot;
 import org.vut.ija_project.DataLayer.Robot.ControlledRobot;
 import org.vut.ija_project.DataLayer.Robot.Robot;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -139,5 +141,27 @@ public class EnvironmentManager
     public void moveControlledRobotForward(Robot robot) {
         ControlledRobot controlledRobot = (ControlledRobot) robot;
         controlledRobot.setState(ControlledRobot.State.MOVE_FORWARD);
+    }
+
+    public void getEnvironmentFromFile(File chosenFile) {
+        //backup environment, if something went wrong
+        Environment backupEnvironment = this.currEnvironment.copy();
+        try {
+            Environment environmentFromFile = FileEnvironmentReader.createEnvironmentFromSource(chosenFile);
+            //delete everything from current main view
+            this.currEnvironment.robots().forEach(r->mainView.deleteRobot(r));
+            this.currEnvironment.obstacles().forEach(o->mainView.deleteObstacle(o));
+
+            this.intitialEnvironment = environmentFromFile;
+            this.currEnvironment = this.intitialEnvironment.copy();
+            //add everything from file's environment
+            this.currEnvironment.robots().forEach(r->mainView.addRobot(r));
+            this.currEnvironment.obstacles().forEach(o->mainView.addObstacle(o));
+
+            mainView.update();
+        } catch (RuntimeException ignored) {
+            this.intitialEnvironment = backupEnvironment;
+            this.currEnvironment = this.intitialEnvironment.copy();
+        }
     }
 }

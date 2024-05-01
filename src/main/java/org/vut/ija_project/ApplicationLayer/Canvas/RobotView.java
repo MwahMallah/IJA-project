@@ -12,8 +12,8 @@ import org.vut.ija_project.DataLayer.Robot.RobotType;
 public class RobotView implements SelectableView {
     private final Robot robot;
     private final CanvasView canvasView;
-    private final double scaledImageWidth;
-    private final double scaledImageHeight;
+    private double scaledImageWidth;
+    private double scaledImageHeight;
     private GraphicsContext gc;
     private final EnvironmentManager environmentManager;
     private Image robotImage;
@@ -34,21 +34,14 @@ public class RobotView implements SelectableView {
             robotImage = new Image(getClass().getResourceAsStream("/bug_yellow.png"));
         }
 
-        double cellWidth  = this.canvasView.getCellWidth();
-        double cellHeight = this.canvasView.getCellHeight();
-
-        double imageScaleX = cellWidth / robotImage.getWidth();
-        double imageScaleY = cellHeight / robotImage.getHeight();
-        double scaleFactor = Math.min(imageScaleY, imageScaleX);
-
-        scaledImageWidth = robotImage.getWidth() * scaleFactor;
-        scaledImageHeight = robotImage.getHeight() * scaleFactor;
+        getImageSize();
         update();
     }
 
     public void update() {
         Position robotPos = robot.getPosition();
 
+        getImageSize();
         double cellWidth  = this.canvasView.getCellWidth();
         double cellHeight = this.canvasView.getCellHeight();
 
@@ -93,6 +86,18 @@ public class RobotView implements SelectableView {
         this.gc.restore();
 
         this.gc.setEffect(null);
+    }
+
+    private void getImageSize() {
+        double cellWidth  = this.canvasView.getCellWidth();
+        double cellHeight = this.canvasView.getCellHeight();
+
+        double imageScaleX = cellWidth / robotImage.getWidth();
+        double imageScaleY = cellHeight / robotImage.getHeight();
+        double scaleFactor = Math.min(imageScaleY, imageScaleX);
+
+        scaledImageWidth = robotImage.getWidth() * scaleFactor;
+        scaledImageHeight = robotImage.getHeight() * scaleFactor;
     }
 
     @Override

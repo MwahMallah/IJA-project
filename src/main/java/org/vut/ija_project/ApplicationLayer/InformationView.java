@@ -20,9 +20,9 @@ public class InformationView extends VBox {
 
     public void setSelected(SelectedView selectedView) {
         this.getChildren().clear();
-        if (selectedView == null) return;
-
         this.selectedView = selectedView;
+        if (this.selectedView == null) return;
+
         this.selectedView.requestFocus();
         this.selectedView.update();
         this.getChildren().add(selectedView);
@@ -32,6 +32,7 @@ public class InformationView extends VBox {
         //because Events and UI rendering are made in same thread, events in controlled robot
         //are not registered in time, after many attempts decided to not update controlled robot info
         //during simulation, so it could be controllable
+        if (selectedView == null) this.getChildren().clear();
         if (selectedView == null || selectedView.getType() == RobotType.CONTROLLABLE) return;
 
         this.getChildren().clear();

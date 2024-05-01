@@ -77,6 +77,8 @@ public class CanvasView extends HBox {
     }
 
     public void update() {
+        this.cellWidth = canvasWidth / (environmentManager.getWidth() + 1);
+        this.cellHeight = canvasHeight / (environmentManager.getHeight() + 1);
         eraseObjects();
 
         for (var robotView : robotViewList) {robotView.update();}
