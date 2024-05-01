@@ -24,7 +24,7 @@ public interface Environment extends Observer {
      * Creates obstacle at given position
      * @return success of operation
      */
-    public boolean createObstacleAt(double y, double x);
+    public Obstacle createObstacleAt(double y, double x);
 
     /*
      * Checks if there is obstacle at this position
@@ -48,4 +48,5 @@ public interface Environment extends Observer {
     public List<Obstacle> obstacles();
     public Environment copy();
     public void removeRobot(Robot robot);
+    public void removeObstacle(Obstacle obstacle);
 }

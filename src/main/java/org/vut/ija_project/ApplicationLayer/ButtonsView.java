@@ -11,6 +11,7 @@ public class ButtonsView extends HBox {
     private Simulator simulator;
     private Button startButton;
     private Button pauseButton;
+    private Button stepButton;
     /**
      * Creates an {@code HBox} layout with {@code spacing = 0}.
      */
@@ -25,7 +26,7 @@ public class ButtonsView extends HBox {
         this.startButton.setStyle("-fx-base: #00ff00; ");
 
         // Button for apps (start, pause, resume)
-        Button stepButton = new Button("Step");
+        this.stepButton = new Button("Step");
         stepButton.setStyle("-fx-base: #0000ff; ");
 
         this.pauseButton = new Button("Pause");
@@ -50,6 +51,7 @@ public class ButtonsView extends HBox {
         environmentManager.simulationReset();
 
         this.pauseButton.setDisable(true);
+        this.stepButton.setDisable(false);
         this.startButton.setDisable(false);
     }
 
@@ -57,6 +59,7 @@ public class ButtonsView extends HBox {
         this.simulator.stop();
 
         this.pauseButton.setDisable(true);
+        this.stepButton.setDisable(false);
         this.startButton.setDisable(false);
     }
 
@@ -64,6 +67,7 @@ public class ButtonsView extends HBox {
         this.simulator.start();
 
         this.pauseButton.setDisable(false);
+        this.stepButton.setDisable(true);
         this.startButton.setDisable(true);
     }
 }

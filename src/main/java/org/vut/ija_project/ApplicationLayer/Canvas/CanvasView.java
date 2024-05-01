@@ -7,13 +7,12 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.image.Image;
 
 import org.vut.ija_project.ApplicationLayer.MainView;
 import org.vut.ija_project.ApplicationLayer.SelectedView.SelectedView;
 import org.vut.ija_project.ApplicationLayer.SelectedView.SelectedViewFactory;
+import org.vut.ija_project.ApplicationLayer.SelectedView.SelectedViewObstacle;
 import org.vut.ija_project.BusinessLayer.EnvironmentManager;
-import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Obstacle.Obstacle;
 import org.vut.ija_project.DataLayer.Robot.Robot;
 
@@ -28,16 +27,16 @@ public class CanvasView extends HBox {
     protected int canvasHeight = 600;
     private GraphicsContext gc;
     private EnvironmentManager environmentManager;
-    private Image obstacleImage;
     private int previousRow;
     private int previousCol;
     private double cellWidth;
     private double cellHeight;
     private List<RobotView> robotViewList;
+    private List<ObstacleView> obstacleViewList;
 
     public CanvasView(EnvironmentManager environmentManager, MainView mainView) {
         robotViewList = new ArrayList<RobotView>();
-        obstacleImage = new Image(getClass().getResourceAsStream("/bush.png"));
+        obstacleViewList = new ArrayList<ObstacleView>();
 
         this.environmentManager = environmentManager;
         this.mainView = mainView;
@@ -47,10 +46,10 @@ public class CanvasView extends HBox {
         this.cellWidth = canvasWidth / (environmentManager.getWidth() + 1);
         this.cellHeight = canvasHeight / (environmentManager.getHeight() + 1);
 
-        canvas.setOnMouseMoved(this::handleMove);
-        canvas.setOnMouseEntered(this::handleEntering);
-        canvas.setOnMouseExited(this::handleExit);
-        canvas.setOnMouseClicked(this::handleClick);
+        canvas.setOnMouseMoved(this::handleMoveMouse);
+        canvas.setOnMouseEntered(this::handleEnterMouse);
+        canvas.setOnMouseExited(this::handleExitMouse);
+        canvas.setOnMouseClicked(this::handleClickMouse);
 
         gc = canvas.getGraphicsContext2D();
         eraseObjects();
@@ -59,35 +58,115 @@ public class CanvasView extends HBox {
         this.setAlignment(Pos.CENTER);
     }
 
-    private void handleClick(MouseEvent mouseEvent) {
-        SelectedView selectedView = null;
-        RobotView selectedRobotView = null;
+    private void eraseObjects() {
+        gc.setFill(Color.LIGHTGRAY);
 
-        robotViewList.forEach(robotView -> {robotView.setSelected(false);});
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        gc.setLineWidth(0.2);
+        for (int x = 0; x <= environmentManager.getWidth() + 1; x++) {
+            double xPos = x * cellWidth;
+            gc.strokeLine(xPos, 0, xPos, canvasHeight);
+        }
+
+        // Draw horizontal lines (rows)
+        for (int y = 0; y <= environmentManager.getHeight() + 1; y++) {
+            double yPos = y * cellHeight;
+            gc.strokeLine(0, yPos, canvasWidth, yPos);
+        }
+    }
+
+    public void update() {
+        eraseObjects();
+
+        for (var robotView : robotViewList) {robotView.update();}
+        for (var obstacle : obstacleViewList) {obstacle.update();}
+    }
+
+    public void addRobot(Robot robot) {
+        var newRobotView = new RobotView(robot, this, environmentManager);
+        robotViewList.add(newRobotView);
+        update();
+    }
+
+    public void addObstacle(Obstacle obstacle) {
+        var newObstacleView = new ObstacleView(obstacle, this, environmentManager);
+        obstacleViewList.add(newObstacleView);
+        update();
+    }
+
+    public void removeRobot(Robot robot) {
+        Optional<RobotView> robotViewToRemoveOptional = robotViewList.stream()
+                .filter(r -> r.getRobot() == robot)
+                .findFirst();
+
+        if (robotViewToRemoveOptional.isPresent()) {
+            RobotView robotViewToRemove = robotViewToRemoveOptional.get();
+            robotViewList.remove(robotViewToRemove);
+        } else {
+            System.out.println("Can't be here (I hope)");
+        }
+        update();
+    }
+
+
+    public void removeObstacle(Obstacle obstacle) {
+        Optional<ObstacleView> obstacleViewToRemoveOptional = obstacleViewList.stream()
+                .filter(r -> r.getObstacle() == obstacle)
+                .findFirst();
+
+        if (obstacleViewToRemoveOptional.isPresent()) {
+            ObstacleView obstacleViewToRemove = obstacleViewToRemoveOptional.get();
+            obstacleViewList.remove(obstacleViewToRemove);
+        } else {
+            System.out.println("Can't be here (I hope)");
+        }
+
+        update();
+    }
+
+    public void reset() {
+        robotViewList = new ArrayList<RobotView>();
+        List<Robot> robots = this.environmentManager.getRobots();
+
+        for (var robot : robots) {
+            addRobot(robot);
+        }
+
+        obstacleViewList.forEach(obstacleView -> obstacleView.setSelected(false));
+    }
+
+    private void handleClickMouse(MouseEvent mouseEvent) {
+        SelectedView selectedView = null;
+
+        RobotView selectedRobotView = null;
+        robotViewList.forEach(robotView -> robotView.setSelected(false));
         for (var robotView : robotViewList) {
             if (robotView.isClicked(mouseEvent.getX(), mouseEvent.getY())) {
                 selectedRobotView = robotView; break;
             }
         }
 
+        ObstacleView selectedObstacleView = null;
+        obstacleViewList.forEach(obstacleView -> obstacleView.setSelected(false));
+        for (var obstacleView : obstacleViewList) {
+            if (obstacleView.isClicked(mouseEvent.getX(), mouseEvent.getY())) {
+                selectedObstacleView = obstacleView; break;
+            }
+        }
+
         if (selectedRobotView != null) {
             selectedRobotView.setSelected(true);
             selectedView = SelectedViewFactory.create(selectedRobotView, environmentManager);
+        } else if (selectedObstacleView != null) {
+            selectedObstacleView.setSelected(true);
+            selectedView = SelectedViewFactory.create(selectedObstacleView, environmentManager);
         }
 
         mainView.setSelected(selectedView);
     }
 
-    private void handleExit(MouseEvent mouseEvent) {
-        update();
-    }
-
-    private void handleEntering(MouseEvent mouseEvent) {
-        previousCol = (int) (mouseEvent.getX() / cellWidth);
-        previousRow = (int) (mouseEvent.getY() / cellHeight);
-    }
-
-    private void handleMove(MouseEvent mouseEvent) {
+    private void handleMoveMouse(MouseEvent mouseEvent) {
         int currCol = (int) (mouseEvent.getX() / cellWidth);
         int currRow = (int) (mouseEvent.getY() / cellHeight);
 
@@ -111,91 +190,17 @@ public class CanvasView extends HBox {
         gc.setEffect(null);
     }
 
-    private void eraseObjects() {
-        gc.setFill(Color.LIGHTGRAY);
-
-        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-
-        gc.setLineWidth(0.2);
-        for (int x = 0; x <= environmentManager.getWidth() + 1; x++) {
-            double xPos = x * cellWidth;
-            gc.strokeLine(xPos, 0, xPos, canvasHeight);
-        }
-
-        // Draw horizontal lines (rows)
-        for (int y = 0; y <= environmentManager.getHeight() + 1; y++) {
-            double yPos = y * cellHeight;
-            gc.strokeLine(0, yPos, canvasWidth, yPos);
-        }
+    private void handleEnterMouse(MouseEvent mouseEvent) {
+        previousCol = (int) (mouseEvent.getX() / cellWidth);
+        previousRow = (int) (mouseEvent.getY() / cellHeight);
     }
 
-    public void update() {
-        var obstacles = environmentManager.getObstacles();
-        eraseObjects();
-
-        for (var robotView : robotViewList) {
-            robotView.update();
-        }
-
-        for (var obstacle : obstacles) {
-            drawObstacle(obstacle);
-        }
-    }
-
-    private void drawObstacle(Obstacle obstacle) {
-        Position obstaclePos = obstacle.getPosition();
-
-        // top-left pixel coordinates for the given obstacle's position
-        double pixelX = cellWidth  * obstaclePos.getX();
-        double pixelY = cellHeight * obstaclePos.getY();
-
-        double imageScaleX = cellWidth / obstacleImage.getWidth();
-        double imageScaleY = cellHeight / obstacleImage.getHeight();
-        double scaleFactor = Math.min(imageScaleY, imageScaleX);
-
-        // Center the image in the cell by offsetting the position
-        // by half the difference of the cell size and the image size (after scaling)
-        double scaledImageWidth = obstacleImage.getWidth() * scaleFactor;
-        double scaledImageHeight = obstacleImage.getHeight() * scaleFactor;
-        double offsetX = (cellWidth - scaledImageWidth) / 2;
-        double offsetY = (cellHeight - scaledImageHeight) / 2;
-
-        gc.drawImage(obstacleImage, pixelX + offsetX, pixelY + offsetY, scaledImageWidth, scaledImageHeight);
-    }
-
-    public void addRobot(Robot robot) {
-        var newRobotView = new RobotView(robot, this, environmentManager);
-        robotViewList.add(newRobotView);
+    private void handleExitMouse(MouseEvent mouseEvent) {
         update();
     }
 
-    public void removeRobot(Robot robot) {
-        Optional<RobotView> robotViewToRemoveOptional = robotViewList.stream()
-                .filter(r -> r.getRobot() == robot)
-                .findFirst();
-
-        if (robotViewToRemoveOptional.isPresent()) {
-            RobotView robotViewToRemove = robotViewToRemoveOptional.get();
-            robotViewList.remove(robotViewToRemove);
-        } else {
-            System.out.println("Can't be here (I hope)");
-        }
-        update();
-    }
-
-    public void reset() {
-        robotViewList = new ArrayList<RobotView>();
-        List<Robot> robots = this.environmentManager.getRobots();
-
-        for (var robot : robots) {
-            addRobot(robot);
-        }
-    }
-
-    public GraphicsContext getContext() {
-        return gc;
-    }
-
+    public GraphicsContext getContext() {return gc;}
     public double getCellWidth() {return cellWidth;}
     public double getCellHeight() {return cellHeight;}
+
 }

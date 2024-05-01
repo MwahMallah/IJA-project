@@ -7,15 +7,16 @@ import javafx.scene.paint.Color;
 import org.vut.ija_project.BusinessLayer.EnvironmentManager;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Robot.Robot;
+import org.vut.ija_project.DataLayer.Robot.RobotType;
 
-public class RobotView {
+public class RobotView implements SelectableView {
     private final Robot robot;
     private final CanvasView canvasView;
     private final double scaledImageWidth;
     private final double scaledImageHeight;
     private GraphicsContext gc;
     private final EnvironmentManager environmentManager;
-    private final Image robotImage;
+    private Image robotImage;
     private double currPixelX;
     private double currPixelY;
     private boolean selected;
@@ -27,7 +28,11 @@ public class RobotView {
         this.environmentManager = environmentManager;
         this.selected = false;
 
-        robotImage = new Image(getClass().getResourceAsStream("/insect.png"));
+        if (robot.getType() == RobotType.AUTONOMOUS) {
+            robotImage = new Image(getClass().getResourceAsStream("/bug_red.png"));
+        } else if (robot.getType() == RobotType.CONTROLLABLE) {
+            robotImage = new Image(getClass().getResourceAsStream("/bug_yellow.png"));
+        }
 
         double cellWidth  = this.canvasView.getCellWidth();
         double cellHeight = this.canvasView.getCellHeight();
@@ -61,9 +66,14 @@ public class RobotView {
 
         if (selected) {
             DropShadow glow = new DropShadow();
-            glow.setColor(Color.RED);
-            glow.setRadius(10);
-            glow.setSpread(0.05);
+            if (robot.getType() == RobotType.AUTONOMOUS) {
+                glow.setColor(Color.RED);
+            } else if (robot.getType() == RobotType.CONTROLLABLE) {
+                glow.setColor(Color.YELLOW);
+            }
+
+            glow.setRadius(15);
+            glow.setSpread(0.1);
 
             // Set the glow effect
             gc.setEffect(glow);
@@ -85,6 +95,7 @@ public class RobotView {
         this.gc.setEffect(null);
     }
 
+    @Override
     public boolean isClicked(double x, double y) {
         boolean withinHorizontalBoundary =
                 x >= currPixelX && x <= (currPixelX + scaledImageWidth);
@@ -94,7 +105,8 @@ public class RobotView {
         return  withinHorizontalBoundary && withinVerticalBoundary;
     }
 
-    public void setSelected(boolean selected) {this.selected = selected;}
+    @Override
+    public void setSelected(boolean isSelected) {this.selected = isSelected;}
 
     public Robot getRobot() {
         return this.robot;

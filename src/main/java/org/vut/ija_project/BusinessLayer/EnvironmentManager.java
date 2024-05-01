@@ -35,9 +35,9 @@ public class EnvironmentManager
         Position newRobotPos = new Position(y, x);
         Robot newRobot = null;
 
-        if (type.equals("Automated")) {
+        if (type.equals("Autonomous")) {
             newRobot = AutonomousRobot.create(currEnvironment, newRobotPos);
-        } else if (type.equals("Controlled")) {
+        } else if (type.equals("Controllable")) {
             newRobot = ControlledRobot.create(currEnvironment, newRobotPos);
         }
 
@@ -48,22 +48,20 @@ public class EnvironmentManager
 
         //if we want to add robot, make current environment position initial
         this.intitialEnvironment = this.currEnvironment.copy();
-
         mainView.addRobot(newRobot);
     }
 
     public void addObstacle(double y, double x) {
-        boolean created = this.currEnvironment.createObstacleAt(y, x);
+        Obstacle created = this.currEnvironment.createObstacleAt(y, x);
 
-        if (!created) {
+        if (created == null) {
             System.out.println("Obstacle is not created");
             throw new RuntimeException("Invalid position");
         }
 
         //if we want to add obstacle, make current environment position initial
         this.intitialEnvironment = this.currEnvironment.copy();
-
-        mainView.update();
+        mainView.addObstacle(created);
     }
 
     public void simulationReset() {
@@ -112,5 +110,34 @@ public class EnvironmentManager
 
         this.intitialEnvironment = this.currEnvironment.copy();
         mainView.update();
+    }
+
+    public void deleteObstacle(Obstacle obstacle) {
+        this.currEnvironment.removeObstacle(obstacle);
+
+        this.intitialEnvironment = this.currEnvironment.copy();
+        mainView.deleteObstacle(obstacle);
+    }
+
+    public void updateObstacle(Obstacle obstacle, ObjectConfiguration configuration) {
+        obstacle.setConfiguration(configuration);
+
+        this.intitialEnvironment = this.currEnvironment.copy();
+        mainView.update();
+    }
+
+    public void turnControlledRobotCounterClockwise(Robot robot) {
+        ControlledRobot controlledRobot = (ControlledRobot) robot;
+        controlledRobot.setState(ControlledRobot.State.TURN_COUNTERCLOCKWISE);
+    }
+
+    public void turnControlledRobotClockwise(Robot robot) {
+        ControlledRobot controlledRobot = (ControlledRobot) robot;
+        controlledRobot.setState(ControlledRobot.State.TURN_CLOCKWISE);
+    }
+
+    public void moveControlledRobotForward(Robot robot) {
+        ControlledRobot controlledRobot = (ControlledRobot) robot;
+        controlledRobot.setState(ControlledRobot.State.MOVE_FORWARD);
     }
 }

@@ -7,6 +7,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import org.vut.ija_project.ApplicationLayer.SelectedView.SelectedView;
 import org.vut.ija_project.BusinessLayer.EnvironmentManager;
+import org.vut.ija_project.DataLayer.Robot.RobotType;
 
 public class InformationView extends VBox {
     private final EnvironmentManager environmentManager;
@@ -18,15 +19,22 @@ public class InformationView extends VBox {
     }
 
     public void setSelected(SelectedView selectedView) {
+        this.getChildren().clear();
+        if (selectedView == null) return;
+
         this.selectedView = selectedView;
-        update();
+        this.selectedView.update();
+        this.getChildren().add(selectedView);
     }
 
     public void update() {
+        //because Events and UI rendering are made in same thread, events in controlled robot
+        //are not registered in time, after many attempts decided to not update controlled robot info
+        //during simulation, so it could be controllable
+        if (selectedView == null || selectedView.getType() == RobotType.CONTROLLABLE) return;
+
         this.getChildren().clear();
         //if there is no selected view don't display anything
-        if (selectedView == null) return;
-
         selectedView.update();
         this.getChildren().add(selectedView);
     }

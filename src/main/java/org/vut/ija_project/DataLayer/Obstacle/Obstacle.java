@@ -1,5 +1,6 @@
 package org.vut.ija_project.DataLayer.Obstacle;
 
+import org.vut.ija_project.Common.ObjectConfiguration;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Environment.Environment;
 
@@ -18,4 +19,8 @@ public class Obstacle {
     }
 
     public double getObstacleSize() {return obstacleSize;}
+
+    public void setConfiguration(ObjectConfiguration configuration) {
+        this.pos = new Position(configuration.newY, configuration.newX);
+    }
 }

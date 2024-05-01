@@ -112,8 +112,6 @@ public class AutonomousRobot implements Robot {
     @Override
     public void updatePosition() {
         if (!move()) turn();
-
-        System.out.println("Robot's position: " + pos);
         notifyObservers();
     }
 
@@ -143,6 +141,9 @@ public class AutonomousRobot implements Robot {
     public double getRobotSize() {
         return this.robotSize;
     }
+
+    @Override
+    public RobotType getType() {return RobotType.AUTONOMOUS;}
 
     @Override
     public void addObserver(Observer observer) {

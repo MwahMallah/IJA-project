@@ -27,15 +27,11 @@ public interface Robot extends Observable {
      * Updates current robot's position.
      */
     public void updatePosition();
-
-
     public Robot copy(Environment env);
-
     public double getVelocity();
 
     public double getRotationAngle();
-
     public void setConfiguration(ObjectConfiguration configuration);
-
     public double getRobotSize();
+    public RobotType getType();
 }

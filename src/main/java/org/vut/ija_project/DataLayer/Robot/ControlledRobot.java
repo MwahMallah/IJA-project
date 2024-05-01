@@ -9,11 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ControlledRobot implements Robot {
+    private double velocity;
     List<Observer> observers;
     private final Environment env;
     private Position pos;
     private int angle;
     private State currState;
+    private double robotSize;
 
     public enum State {
         TURN_COUNTERCLOCKWISE,
@@ -27,6 +29,8 @@ public class ControlledRobot implements Robot {
         this.env = env;
         this.pos = pos;
         this.angle = 0;
+        this.robotSize = 1;
+        this.velocity = 0.1;
         addObserver(env);
         currState = State.NOTHING;
     }
@@ -47,40 +51,37 @@ public class ControlledRobot implements Robot {
 
     private void turnClockWise() {
         angle = (angle + 45) % 360;
+        currState = State.NOTHING;
         notifyObservers();
     }
 
     private void turnCounterClockwise() {
         angle = (angle - 45 + 360) % 360;
+        currState = State.NOTHING;
         notifyObservers();
     }
 
     @Override
     public boolean canMove() {
         Position targetPos = getTargetPosition();
-        return env.containsPosition(targetPos) && !env.obstacleAt(targetPos) && !env.robotAt(targetPos);
+        return env.containsPosition(targetPos) && !env.obstacleAt(targetPos) && !env.robotAt(targetPos, this);
     }
 
     private Position getTargetPosition() {
         // trigonometric angle is rotating counter-clockwise => multiply by -1
         // angle 0 is angle 90 on trigonometric circular => add 90
         double angleRadians = Math.toRadians(-angle + 90);
-        int deltaX = (int) Math.round(Math.cos(angleRadians));
-        int deltaY = (int) Math.round(Math.sin(angleRadians)) * (-1);
+        double deltaX = Math.cos(angleRadians) * this.velocity;
+        double deltaY = Math.sin(angleRadians) * (-1) * this.velocity;
 
         return new Position(deltaY + pos.getY(), deltaX + pos.getX());
-    }
-
-    @Override
-    public Position getPosition() {
-        return pos;
     }
 
     @Override
     public void updatePosition() {
         switch (currState) {
             case MOVE_FORWARD:
-                if (!move()) currState = State.NOTHING;
+                move();
                 break;
             case TURN_COUNTERCLOCKWISE:
                 turnCounterClockwise();
@@ -101,7 +102,7 @@ public class ControlledRobot implements Robot {
     //TODO: change velocity
     @Override
     public double getVelocity() {
-        return 0;
+        return this.velocity;
     }
 
     @Override
@@ -111,24 +112,31 @@ public class ControlledRobot implements Robot {
 
     @Override
     public void setConfiguration(ObjectConfiguration configuration) {
-
+        this.pos = new Position(configuration.newY, configuration.newX);
+        this.angle = configuration.newAngle;
+        this.velocity = configuration.newVelocity;
     }
+    @Override
+    public Position getPosition() {
+        return pos;
+    }
+    @Override
+    public double getRobotSize() {return this.robotSize;}
 
     @Override
-    public double getRobotSize() {
-        return 0;
-    }
+    public RobotType getType() {return RobotType.CONTROLLABLE;}
 
     public void setState(State state) {
         currState = state;
     }
 
-    private boolean move() {
-        if (!canMove()) return false;
+    private void move() {
+        currState = State.NOTHING;
+        if (!canMove()) {return;}
 
         pos = getTargetPosition();
+        currState = State.NOTHING;
         notifyObservers();
-        return true;
     }
 
     @Override

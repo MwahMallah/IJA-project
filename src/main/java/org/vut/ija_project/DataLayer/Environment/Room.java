@@ -45,13 +45,14 @@ public class Room implements Environment {
     }
 
     @Override
-    public boolean createObstacleAt(double y, double x) {
+    public Obstacle createObstacleAt(double y, double x) {
         Position targetPos = new Position(y, x);
         if (!containsPosition(targetPos) || obstacleAt(targetPos) || robotAt(targetPos)) {
-            return false;
+            return null;
         }
-        obstaclesInRoom.add(new Obstacle(this, targetPos));
-        return true;
+        var newObstacle = new Obstacle(this, targetPos);
+        obstaclesInRoom.add(newObstacle);
+        return newObstacle;
     }
 
     @Override
@@ -158,4 +159,7 @@ public class Room implements Environment {
     public void removeRobot(Robot robot) {
         robotsInRoom.remove(robot);
     }
+
+    @Override
+    public void removeObstacle(Obstacle obstacle) {obstaclesInRoom.remove(obstacle);}
 }

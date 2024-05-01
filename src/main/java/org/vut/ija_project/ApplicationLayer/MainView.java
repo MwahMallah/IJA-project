@@ -7,6 +7,7 @@ import javafx.scene.layout.VBox;
 import org.vut.ija_project.ApplicationLayer.Canvas.CanvasView;
 import org.vut.ija_project.ApplicationLayer.SelectedView.SelectedView;
 import org.vut.ija_project.BusinessLayer.EnvironmentManager;
+import org.vut.ija_project.DataLayer.Obstacle.Obstacle;
 import org.vut.ija_project.DataLayer.Robot.Robot;
 
 public class MainView extends HBox
@@ -54,12 +55,19 @@ public class MainView extends HBox
         informationView.setSelected(null);
     }
 
+    public void deleteRobot(Robot robot) {
+        canvasView.removeRobot(robot);
+        informationView.setSelected(null);
+    }
+
     public void addRobot(Robot robot) {
         canvasView.addRobot(robot);
     }
 
-    public void deleteRobot(Robot robot) {
-        canvasView.removeRobot(robot);
+    public void addObstacle(Obstacle obstacle) {canvasView.addObstacle(obstacle);}
+
+    public void deleteObstacle(Obstacle obstacle) {
+        canvasView.removeObstacle(obstacle);
         informationView.setSelected(null);
     }
 }

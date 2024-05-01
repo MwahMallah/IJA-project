@@ -7,11 +7,9 @@ import org.vut.ija_project.DataLayer.Environment.Room;
 import org.vut.ija_project.DataLayer.Robot.ControlledRobot;
 import org.vut.ija_project.DataLayer.Robot.Robot;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RoomTest
 {
@@ -65,8 +63,8 @@ public class RoomTest
         room.createObstacleAt(3, 3);
         assertTrue(room.obstacleAt(3, 3)); // Now there should be an obstacle at (3, 3)
 
-        assertFalse(room.createObstacleAt(1, 2)); // There is already an obstacle at (1, 2)
-        assertFalse(room.createObstacleAt(4, 2)); // There is a robot at (4, 2)
+        assertNull(room.createObstacleAt(1, 2)); // There is already an obstacle at (1, 2)
+        assertNull(room.createObstacleAt(4, 2)); // There is a robot at (4, 2)
     }
 
     @Test
