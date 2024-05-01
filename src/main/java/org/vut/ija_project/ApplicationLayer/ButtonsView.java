@@ -7,6 +7,7 @@ import org.vut.ija_project.BusinessLayer.EnvironmentManager;
 import org.vut.ija_project.BusinessLayer.Simulator;
 
 public class ButtonsView extends HBox {
+    private final Button resetButton;
     private EnvironmentManager environmentManager;
     private Simulator simulator;
     private Button startButton;
@@ -24,17 +25,21 @@ public class ButtonsView extends HBox {
 
         this.startButton = new Button("Start");
         this.startButton.setStyle("-fx-base: #00ff00; ");
+        this.startButton.setFocusTraversable(false);
 
         // Button for apps (start, pause, resume)
         this.stepButton = new Button("Step");
-        stepButton.setStyle("-fx-base: #0000ff; ");
+        this.stepButton.setStyle("-fx-base: #0000ff; ");
+        this.stepButton.setFocusTraversable(false);
 
         this.pauseButton = new Button("Pause");
         this.pauseButton.setStyle("-fx-base: #ff0000;");
         this.pauseButton.setDisable(true);
+        this.pauseButton.setFocusTraversable(false);
 
-        Button resetButton = new Button("Reset");
-        resetButton.setStyle("-fx-base: #000000; -fx-text-fill: #ffffff;");
+        this.resetButton = new Button("Reset");
+        this.resetButton.setStyle("-fx-base: #000000; -fx-text-fill: #ffffff;");
+        this.resetButton.setFocusTraversable(false);
 
         this.getChildren().addAll(pauseButton, startButton, stepButton, resetButton);
         // -----------------------------------------------------------------------------

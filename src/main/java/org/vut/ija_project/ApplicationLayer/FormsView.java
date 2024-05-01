@@ -26,11 +26,14 @@ public class FormsView extends VBox {
         titleLabel.setStyle("-fx-font-weight: bold;");
         Label widthLabel = new Label("Width:");
         TextField widthField = new TextField();
+        widthField.setFocusTraversable(false);
         widthField.setMaxSize(80, 10);
         Label heightLabel = new Label("Height:");
         TextField heightField = new TextField();
+        heightField.setFocusTraversable(false);
         heightField.setMaxSize(80, 10);
         Button setDimensionsButton = new Button("Set Dimensions");
+        setDimensionsButton.setFocusTraversable(false);
         VBox dimensionForm = new VBox(10);
         dimensionForm.setPadding(new Insets(10));
         dimensionForm.getChildren().addAll(titleLabel, widthLabel, widthField, heightLabel, heightField, setDimensionsButton);
@@ -38,15 +41,22 @@ public class FormsView extends VBox {
         // Form for adding robot on the canvas with the given position
         Label addRobotLabel = new Label("Set the position of the bug:");
         addRobotLabel.setStyle("-fx-font-weight: bold;");
+
         Label xLabelRobotPos = new Label("X:");
         xRobotPosField = new TextField();
         xRobotPosField.setMaxSize(80, 10);
+        xRobotPosField.setFocusTraversable(false);
+
         Label yLabelRobotPos = new Label("Y:");
         yRobotPosField = new TextField();
         yRobotPosField.setMaxSize(80, 10);
+        yRobotPosField.setFocusTraversable(false);
+
         HBox addRobotButtonHbox = new HBox(10);
         Button addRobotButton = new Button("Add Bug");
+        addRobotButton.setFocusTraversable(false);
         robotVariantList = new ComboBox<>();
+        robotVariantList.setFocusTraversable(false);
         robotVariantList.getItems().addAll("Autonomous", "Controllable");
         robotVariantList.getSelectionModel().select("Autonomous");
         addRobotButtonHbox.getChildren().addAll(addRobotButton, robotVariantList);
@@ -61,11 +71,16 @@ public class FormsView extends VBox {
         addObstacleLabel.setStyle("-fx-font-weight: bold;");
         Label xLabelObstaclePos = new Label("X:");
         xObstaclePosField = new TextField();
+        xObstaclePosField.setFocusTraversable(false);
         xObstaclePosField.setMaxSize(80, 10);
+
         Label yLabelObstaclePos = new Label("Y:");
         yObstaclePosField = new TextField();
         yObstaclePosField.setMaxSize(80, 10);
+        yObstaclePosField.setFocusTraversable(false);
+
         Button addObstacleButton = new Button("Add Obstacle");
+        addObstacleButton.setFocusTraversable(false);
         VBox addObstacleForm = new VBox(10);
         addObstacleForm.setPadding(new Insets(10));
         addObstacleForm.getChildren().addAll(addObstacleLabel, xLabelObstaclePos,

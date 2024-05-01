@@ -2,7 +2,9 @@ package org.vut.ija_project.ApplicationLayer;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import org.vut.ija_project.ApplicationLayer.SelectedView.SelectedView;
 import org.vut.ija_project.BusinessLayer.EnvironmentManager;
 import org.vut.ija_project.DataLayer.Environment.Environment;
 import org.vut.ija_project.DataLayer.Environment.Room;
@@ -18,6 +20,7 @@ public class App extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+
 
     public static void main(String[] args) {
         try {

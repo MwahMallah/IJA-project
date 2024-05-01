@@ -40,6 +40,7 @@ public abstract class SelectedView extends VBox {
         fieldSetProperty.setText(fieldPlaceholder);
         fieldSetProperty.setFont(new Font("Arial", 18));
         fieldSetProperty.setMaxSize(80, 5);
+        fieldSetProperty.setFocusTraversable(false);
 
         Pane spacer = new Pane();
         HBox.setHgrow(spacer, Priority.ALWAYS); // Allow spacer to take all available space
@@ -58,10 +59,13 @@ public abstract class SelectedView extends VBox {
         updateButton = new Button("Update");
         updateButton.setFont(new Font("Arial", 20));
         updateButton.setStyle("-fx-base: #1e90ff; -fx-text-fill: white;");
+        updateButton.setFocusTraversable(false);
 
         deleteButton = new Button("Delete");
         deleteButton.setFont(new Font("Arial", 20));
         deleteButton.setStyle("-fx-base: #ff301e; -fx-text-fill: white;");
+        deleteButton.setFocusTraversable(false);
+
         VBox.setMargin(deleteButton, new Insets(0, 0, 30, 0));
         buttonsBox.getChildren().addAll(updateButton, deleteButton);
 

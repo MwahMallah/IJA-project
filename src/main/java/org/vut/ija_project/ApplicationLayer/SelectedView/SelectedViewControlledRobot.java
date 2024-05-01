@@ -1,5 +1,6 @@
 package org.vut.ija_project.ApplicationLayer.SelectedView;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -55,28 +56,49 @@ public class SelectedViewControlledRobot extends SelectedView {
 
         deleteButton.setOnAction(this::handleDelete);
         updateButton.setOnAction(this::handleUpdateButton);
-        left.setOnAction(this::handleLeftButton);
-        center.setOnAction(this::handleCenterButton);
-        right.setOnAction(this::handleRightButton);
+
+        left.setOnAction(event-> handleCounterClockwiseTurn());
+        center.setOnAction(event-> handleForwardMove());
+        right.setOnAction(event-> handleClockwiseTurn());
+        setupKeyHandlers();
     }
+
+    private void setupKeyHandlers() {
+        this.setFocusTraversable(true);
+
+        //if selected view is chosen, never give focus to any other component
+        this.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            if (!isNowFocused) {
+                Platform.runLater(this::requestFocus);
+            }
+        });
+
+        this.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case LEFT -> handleCounterClockwiseTurn();
+                case UP -> handleForwardMove();
+                case RIGHT -> handleClockwiseTurn();
+            }
+        });
+    }
+
     @Override
-    public void update() {
-    }
+    public void update() {}
 
     @Override
     public RobotType getType() {
         return RobotType.CONTROLLABLE;
     }
 
-    private void handleRightButton(ActionEvent actionEvent) {
+    private void handleClockwiseTurn() {
         environmentManager.turnControlledRobotClockwise(this.robotView.getRobot());
     }
 
-    private void handleCenterButton(ActionEvent actionEvent) {
+    private void handleForwardMove() {
         environmentManager.moveControlledRobotForward(this.robotView.getRobot());
     }
 
-    private void handleLeftButton(ActionEvent actionEvent) {
+    private void handleCounterClockwiseTurn() {
         environmentManager.turnControlledRobotCounterClockwise(this.robotView.getRobot());
     }
 
@@ -85,12 +107,15 @@ public class SelectedViewControlledRobot extends SelectedView {
         controlButtonHbox.setAlignment(Pos.CENTER);
         left = new Button("←");
         left.setFont(new Font("Arial", 30));
+        left.setFocusTraversable(false);
 
         center = new Button("↑");
         center.setFont(new Font("Arial", 30));
+        center.setFocusTraversable(false);
 
         right = new Button("→");
         right.setFont(new Font("Arial", 30));
+        right.setFocusTraversable(false);
 
         controlButtonHbox.getChildren().addAll(left, center, right);
         controlButtonHbox.setPadding(new Insets(75, 0, 0, 0));

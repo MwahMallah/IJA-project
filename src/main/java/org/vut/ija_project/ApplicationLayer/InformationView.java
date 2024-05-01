@@ -23,6 +23,7 @@ public class InformationView extends VBox {
         if (selectedView == null) return;
 
         this.selectedView = selectedView;
+        this.selectedView.requestFocus();
         this.selectedView.update();
         this.getChildren().add(selectedView);
     }
@@ -38,5 +39,4 @@ public class InformationView extends VBox {
         selectedView.update();
         this.getChildren().add(selectedView);
     }
-
 }
