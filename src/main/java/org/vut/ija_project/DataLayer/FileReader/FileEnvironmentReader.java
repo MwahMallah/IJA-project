@@ -11,6 +11,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.vut.ija_project.DataLayer.Environment.Room;
 import org.vut.ija_project.DataLayer.Robot.AutonomousRobot;
+import org.vut.ija_project.DataLayer.Robot.RobotColor;
 
 public class FileEnvironmentReader
 {
@@ -45,8 +46,9 @@ public class FileEnvironmentReader
                     double y = Double.parseDouble(record.get("y"));
                     int angle = Integer.parseInt(record.get("angle"));
                     int angleRotate = Integer.parseInt(record.get("rotate_angle"));
+                    RobotColor color = getRobotColor(record.get("color"));
 
-                    addObjectToEnvironment(type, x, y, angle, angleRotate);
+                    addObjectToEnvironment(type, x, y, angle, angleRotate, color);
                 }
             }
         } catch (IOException e) {
@@ -54,6 +56,18 @@ public class FileEnvironmentReader
         }
 
         return environment;
+    }
+
+    private static RobotColor getRobotColor(String color) {
+        return switch (color) {
+            case "red" -> RobotColor.RED;
+            case "orange" -> RobotColor.ORANGE;
+            case "yellow" -> RobotColor.YELLOW;
+            case "green" -> RobotColor.GREEN;
+            case "blue" -> RobotColor.BLUE;
+            case "purple" -> RobotColor.PURPLE;
+            default -> throw new IllegalStateException("Unexpected value: " + color);
+        };
     }
 
 
@@ -66,11 +80,12 @@ public class FileEnvironmentReader
         };
     }
 
-    private static void addObjectToEnvironment(ObjectType type, double x, double y, int angle, int rotateAngle) {
+    private static void addObjectToEnvironment(ObjectType type, double x,
+                                               double y, int angle, int rotateAngle, RobotColor color) {
         switch (type) {
             case OBSTACLE -> environment.createObstacleAt(y, x);
-            case CONTROLLED_ROBOT -> ControlledRobot.create(environment, new Position(y, x), angle);
-            case AUTONOMOUS_ROBOT -> AutonomousRobot.create(environment, new Position(y, x), angle, rotateAngle);
+            case CONTROLLED_ROBOT -> ControlledRobot.create(environment, new Position(y, x), angle, color);
+            case AUTONOMOUS_ROBOT -> AutonomousRobot.create(environment, new Position(y, x), angle, rotateAngle, color);
             default -> {}
         }
     }

@@ -1,10 +1,10 @@
 package org.vut.ija_project.ApplicationLayer.SelectedView;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -32,6 +32,7 @@ public class SelectedViewControlledRobot extends SelectedView {
     private Button right;
     private Label positionLabel;
     private Label angleLabel;
+    private ComboBox<String> colorComboBox;
 
     public SelectedViewControlledRobot(RobotView robotView, EnvironmentManager environmentManager) {
         this.robotView = robotView;
@@ -50,6 +51,9 @@ public class SelectedViewControlledRobot extends SelectedView {
                 Double.toString(robotView.getRobot().angle()));
         fieldSetVelocity = createNewSetField("Set Velocity: ",
                 Double.toString(robotView.getRobot().getVelocity()));
+
+        colorComboBox = createNewColorComboBox();
+        colorComboBox.getSelectionModel().select("Yellow");
 
         addControlButtons();
         addUpdateDeleteButtons();
@@ -120,13 +124,16 @@ public class SelectedViewControlledRobot extends SelectedView {
         var newY = Double.parseDouble(fieldSetY.getText());
         var newAngle = (int) Double.parseDouble(fieldSetAngle.getText());
         var newVelocity = Double.parseDouble(fieldSetVelocity.getText());
+        var newColor = getRobotColor(colorComboBox);
+
         Robot robot = robotView.getRobot();
 
         //if there is no changes don't update anything
         if (newX == robot.getPosition().getX() && newY == robot.getPosition().getY()
-                && newAngle == robot.angle() && newVelocity == robot.getVelocity()) return;
+                && newAngle == robot.angle() && newVelocity == robot.getVelocity()
+                && newColor == robot.getColor()) return;
 
-        var configuration = new ObjectConfiguration(newX, newY, newAngle, newVelocity, 0);
+        var configuration = new ObjectConfiguration(newX, newY, newAngle, newVelocity, 0, newColor);
         environmentManager.updateRobot(robot, configuration);
     }
 

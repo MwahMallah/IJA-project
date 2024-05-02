@@ -7,6 +7,8 @@ import javafx.scene.layout.VBox;
 import org.vut.ija_project.BusinessLayer.EnvironmentManager;
 
 public class FormsView extends VBox {
+    private final TextField heightField;
+    private TextField widthField;
     private EnvironmentManager environmentManager;
     private TextField xRobotPosField;
     private TextField yRobotPosField;
@@ -25,11 +27,11 @@ public class FormsView extends VBox {
         Label titleLabel = new Label("Set the dimensions of your environment:");
         titleLabel.setStyle("-fx-font-weight: bold;");
         Label widthLabel = new Label("Width:");
-        TextField widthField = new TextField();
+        widthField = new TextField();
         widthField.setFocusTraversable(false);
         widthField.setMaxSize(80, 10);
         Label heightLabel = new Label("Height:");
-        TextField heightField = new TextField();
+        heightField = new TextField();
         heightField.setFocusTraversable(false);
         heightField.setMaxSize(80, 10);
         Button setDimensionsButton = new Button("Set Dimensions");
@@ -87,13 +89,20 @@ public class FormsView extends VBox {
                 xObstaclePosField, yLabelObstaclePos, yObstaclePosField, addObstacleButton);
 
         // For setting the dimensions of the environment
-        setDimensionsButton.setOnAction(event -> {});
+        setDimensionsButton.setOnAction(event -> createEnvironment());
         // For adding robot on the canvas
         addRobotButton.setOnAction(event -> addRobot());
         // For adding obstacle on the canvas
         addObstacleButton.setOnAction(event -> addObstacle());
 
         this.getChildren().addAll(dimensionForm, addRobotForm, addObstacleForm);
+    }
+
+    private void createEnvironment() {
+        double x = Double.parseDouble(widthField.getText());
+        double y = Double.parseDouble(heightField.getText());
+
+        environmentManager.createEnvironment(y, x);
     }
 
     private void addObstacle() {

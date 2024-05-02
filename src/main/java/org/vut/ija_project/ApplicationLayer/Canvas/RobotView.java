@@ -7,6 +7,7 @@ import javafx.scene.paint.Color;
 import org.vut.ija_project.BusinessLayer.EnvironmentManager;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Robot.Robot;
+import org.vut.ija_project.DataLayer.Robot.RobotColor;
 import org.vut.ija_project.DataLayer.Robot.RobotType;
 
 public class RobotView implements SelectableView {
@@ -16,6 +17,7 @@ public class RobotView implements SelectableView {
     private double scaledImageHeight;
     private GraphicsContext gc;
     private final EnvironmentManager environmentManager;
+    private RobotColor color;
     private Image robotImage;
     private double currPixelX;
     private double currPixelY;
@@ -23,17 +25,13 @@ public class RobotView implements SelectableView {
 
     public RobotView(Robot robot, CanvasView canvasView, EnvironmentManager environmentManager) {
         this.robot = robot;
+        this.color = robot.getColor();
         this.canvasView = canvasView;
         this.gc = this.canvasView.getContext();
         this.environmentManager = environmentManager;
         this.selected = false;
 
-        if (robot.getType() == RobotType.AUTONOMOUS) {
-            robotImage = new Image(getClass().getResourceAsStream("/bug_red.png"));
-        } else if (robot.getType() == RobotType.CONTROLLABLE) {
-            robotImage = new Image(getClass().getResourceAsStream("/bug_yellow.png"));
-        }
-
+        getImage();
         getImageSize();
         update();
     }
@@ -41,6 +39,7 @@ public class RobotView implements SelectableView {
     public void update() {
         Position robotPos = robot.getPosition();
 
+        getImageAfterUpdate();
         getImageSize();
         double cellWidth  = this.canvasView.getCellWidth();
         double cellHeight = this.canvasView.getCellHeight();
@@ -58,18 +57,8 @@ public class RobotView implements SelectableView {
         double offsetY = (cellHeight - scaledImageHeight) / 2;
 
         if (selected) {
-            DropShadow glow = new DropShadow();
-            if (robot.getType() == RobotType.AUTONOMOUS) {
-                glow.setColor(Color.RED);
-            } else if (robot.getType() == RobotType.CONTROLLABLE) {
-                glow.setColor(Color.YELLOW);
-            }
-
-            glow.setRadius(15);
-            glow.setSpread(0.1);
-
             // Set the glow effect
-            gc.setEffect(glow);
+            gc.setEffect(getShadow());
         }
 
         // Save context
@@ -86,6 +75,43 @@ public class RobotView implements SelectableView {
         this.gc.restore();
 
         this.gc.setEffect(null);
+    }
+
+    private DropShadow getShadow() {
+        DropShadow glow = new DropShadow();
+        glow.setColor(switch (this.color) {
+            case RED -> Color.RED;
+            case ORANGE -> Color.ORANGE;
+            case YELLOW -> Color.YELLOW;
+            case GREEN -> Color.GREEN;
+            case BLUE -> Color.BLUE;
+            case PURPLE -> Color.PURPLE;
+            case WHITE -> Color.WHITE;
+        });
+
+        glow.setRadius(15);
+        glow.setSpread(0.1);
+
+        return  glow;
+    }
+
+    private void getImageAfterUpdate() {
+        if (robot.getColor() == this.color) return;
+        this.color = robot.getColor();
+
+        getImage();
+    }
+
+    private void getImage() {
+        this.robotImage = switch (robot.getColor()) {
+            case RED -> new Image(getClass().getResourceAsStream("/bug_red.png"));
+            case ORANGE -> new Image(getClass().getResourceAsStream("/bug_orange.png"));
+            case YELLOW -> new Image(getClass().getResourceAsStream("/bug_yellow.png"));
+            case GREEN -> new Image(getClass().getResourceAsStream("/bug_green.png"));
+            case BLUE -> new Image(getClass().getResourceAsStream("/bug_blue.png"));
+            case PURPLE -> new Image(getClass().getResourceAsStream("/bug_purple.png"));
+            case WHITE -> new Image(getClass().getResourceAsStream("/bug_white.png"));
+        };
     }
 
     private void getImageSize() {

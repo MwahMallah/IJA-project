@@ -4,6 +4,7 @@ import org.vut.ija_project.ApplicationLayer.MainView;
 import org.vut.ija_project.Common.ObjectConfiguration;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Environment.Environment;
+import org.vut.ija_project.DataLayer.Environment.Room;
 import org.vut.ija_project.DataLayer.FileReader.FileEnvironmentReader;
 import org.vut.ija_project.DataLayer.Obstacle.Obstacle;
 import org.vut.ija_project.DataLayer.Robot.AutonomousRobot;
@@ -22,11 +23,11 @@ public class EnvironmentManager
 {
     private MainView mainView;
     private Environment currEnvironment;
-    private Environment intitialEnvironment;
+    private Environment initialEnvironment;
 
     public EnvironmentManager(Environment environment) {
-        this.intitialEnvironment = environment;
-        this.currEnvironment = this.intitialEnvironment.copy();
+        this.initialEnvironment = environment;
+        this.currEnvironment = this.initialEnvironment.copy();
     }
 
     public void addMainView(MainView mainView) {
@@ -49,7 +50,7 @@ public class EnvironmentManager
         }
 
         //if we want to add robot, make current environment position initial
-        this.intitialEnvironment = this.currEnvironment.copy();
+        this.initialEnvironment = this.currEnvironment.copy();
         mainView.addRobot(newRobot);
     }
 
@@ -62,12 +63,12 @@ public class EnvironmentManager
         }
 
         //if we want to add obstacle, make current environment position initial
-        this.intitialEnvironment = this.currEnvironment.copy();
+        this.initialEnvironment = this.currEnvironment.copy();
         mainView.addObstacle(created);
     }
 
     public void simulationReset() {
-        this.currEnvironment = this.intitialEnvironment.copy();
+        this.currEnvironment = this.initialEnvironment.copy();
         mainView.reset();
         mainView.update();
     }
@@ -103,28 +104,28 @@ public class EnvironmentManager
     public void deleteRobot(Robot robot) {
         this.currEnvironment.removeRobot(robot);
 
-        this.intitialEnvironment = this.currEnvironment.copy();
+        this.initialEnvironment = this.currEnvironment.copy();
         mainView.deleteRobot(robot);
     }
 
     public void updateRobot(Robot robot, ObjectConfiguration configuration) {
         robot.setConfiguration(configuration);
 
-        this.intitialEnvironment = this.currEnvironment.copy();
+        this.initialEnvironment = this.currEnvironment.copy();
         mainView.update();
     }
 
     public void deleteObstacle(Obstacle obstacle) {
         this.currEnvironment.removeObstacle(obstacle);
 
-        this.intitialEnvironment = this.currEnvironment.copy();
+        this.initialEnvironment = this.currEnvironment.copy();
         mainView.deleteObstacle(obstacle);
     }
 
     public void updateObstacle(Obstacle obstacle, ObjectConfiguration configuration) {
         obstacle.setConfiguration(configuration);
 
-        this.intitialEnvironment = this.currEnvironment.copy();
+        this.initialEnvironment = this.currEnvironment.copy();
         mainView.update();
     }
 
@@ -149,19 +150,31 @@ public class EnvironmentManager
         try {
             Environment environmentFromFile = FileEnvironmentReader.createEnvironmentFromSource(chosenFile);
             //delete everything from current main view
-            this.currEnvironment.robots().forEach(r->mainView.deleteRobot(r));
-            this.currEnvironment.obstacles().forEach(o->mainView.deleteObstacle(o));
+            deleteEverythingFromRoomView();
 
-            this.intitialEnvironment = environmentFromFile;
-            this.currEnvironment = this.intitialEnvironment.copy();
+            this.initialEnvironment = environmentFromFile;
+            this.currEnvironment = this.initialEnvironment.copy();
             //add everything from file's environment
             this.currEnvironment.robots().forEach(r->mainView.addRobot(r));
             this.currEnvironment.obstacles().forEach(o->mainView.addObstacle(o));
 
             mainView.update();
         } catch (RuntimeException ignored) {
-            this.intitialEnvironment = backupEnvironment;
-            this.currEnvironment = this.intitialEnvironment.copy();
+            this.initialEnvironment = backupEnvironment;
+            this.currEnvironment = this.initialEnvironment.copy();
         }
+    }
+
+    public void createEnvironment(double y, double x) {
+        deleteEverythingFromRoomView();
+        this.initialEnvironment = Room.create(y, x);
+        this.currEnvironment = this.initialEnvironment.copy();
+        mainView.update();
+    }
+
+    private void deleteEverythingFromRoomView() {
+        //delete everything from current main view
+        this.currEnvironment.robots().forEach(r->mainView.deleteRobot(r));
+        this.currEnvironment.obstacles().forEach(o->mainView.deleteObstacle(o));
     }
 }

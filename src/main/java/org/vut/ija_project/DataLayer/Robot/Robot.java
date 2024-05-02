@@ -34,4 +34,5 @@ public interface Robot extends Observable {
     public void setConfiguration(ObjectConfiguration configuration);
     public double getRobotSize();
     public RobotType getType();
+    public RobotColor getColor();
 }

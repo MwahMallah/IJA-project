@@ -1,5 +1,6 @@
 package org.vut.ija_project.DataLayer.Robot;
 
+import javafx.scene.paint.Color;
 import org.vut.ija_project.Common.ObjectConfiguration;
 import org.vut.ija_project.DataLayer.Common.Observer;
 import org.vut.ija_project.DataLayer.Common.Position;
@@ -16,6 +17,7 @@ public class ControlledRobot implements Robot {
     private int angle;
     private State currState;
     private double robotSize;
+    private RobotColor color;
 
     public enum State {
         TURN_COUNTERCLOCKWISE,
@@ -31,13 +33,15 @@ public class ControlledRobot implements Robot {
         this.angle = 0;
         this.robotSize = 1;
         this.velocity = 0.1;
+        this.color = RobotColor.YELLOW;
         addObserver(env);
         currState = State.NOTHING;
     }
 
-    private ControlledRobot(Environment env, Position pos, int angle) {
+    private ControlledRobot(Environment env, Position pos, int angle, RobotColor color) {
         this(env, pos);
         this.angle = angle;
+        this.color = color;
     }
 
     public static ControlledRobot create(Environment env, Position pos) {
@@ -49,11 +53,11 @@ public class ControlledRobot implements Robot {
         return newRobot;
     }
 
-    public static ControlledRobot create(Environment env, Position pos, int angle) {
+    public static ControlledRobot create(Environment env, Position pos, int angle, RobotColor color) {
         if (env == null || pos == null) return null;
         if (env.obstacleAt(pos) || env.robotAt(pos)) return null;
 
-        ControlledRobot newRobot = new ControlledRobot(env, pos, angle);
+        ControlledRobot newRobot = new ControlledRobot(env, pos, angle, color);
         env.addRobot(newRobot);
         return newRobot;
     }
@@ -110,7 +114,7 @@ public class ControlledRobot implements Robot {
 
     @Override
     public Robot copy(Environment env) {
-        return new ControlledRobot(env, this.pos, angle);
+        return new ControlledRobot(env, this.pos, this.angle, this.color);
     }
 
     //TODO: change velocity
@@ -129,6 +133,7 @@ public class ControlledRobot implements Robot {
         this.pos = new Position(configuration.newY, configuration.newX);
         this.angle = configuration.newAngle;
         this.velocity = configuration.newVelocity;
+        this.color = configuration.newColor;
     }
     @Override
     public Position getPosition() {
@@ -139,6 +144,9 @@ public class ControlledRobot implements Robot {
 
     @Override
     public RobotType getType() {return RobotType.CONTROLLABLE;}
+
+    @Override
+    public RobotColor getColor() {return this.color;}
 
     public void setState(State state) {
         currState = state;

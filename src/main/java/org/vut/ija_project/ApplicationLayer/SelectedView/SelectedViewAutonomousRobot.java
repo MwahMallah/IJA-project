@@ -1,6 +1,7 @@
 package org.vut.ija_project.ApplicationLayer.SelectedView;
 
 import javafx.event.ActionEvent;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Priority;
@@ -9,6 +10,7 @@ import org.vut.ija_project.ApplicationLayer.Canvas.RobotView;
 import org.vut.ija_project.BusinessLayer.EnvironmentManager;
 import org.vut.ija_project.Common.ObjectConfiguration;
 import org.vut.ija_project.DataLayer.Robot.Robot;
+import org.vut.ija_project.DataLayer.Robot.RobotColor;
 import org.vut.ija_project.DataLayer.Robot.RobotType;
 
 import java.util.Locale;
@@ -25,6 +27,7 @@ public class SelectedViewAutonomousRobot extends SelectedView {
     private Label angleLabel;
     private Label velocityLabel;
     private Label rotationAngleLabel;
+    private ComboBox<String> colorComboBox;
 
     public SelectedViewAutonomousRobot(RobotView robotView, EnvironmentManager environmentManager) {
         this.robotView = robotView;
@@ -51,6 +54,9 @@ public class SelectedViewAutonomousRobot extends SelectedView {
         fieldSetRotationAngle = createNewSetField("Set rotation: ",
                 Double.toString(robotView.getRobot().getRotationAngle()));
 
+        colorComboBox = createNewColorComboBox();
+        colorComboBox.getSelectionModel().select("Red");
+
         addUpdateDeleteButtons();
 
         deleteButton.setOnAction(this::handleDelete);
@@ -76,15 +82,16 @@ public class SelectedViewAutonomousRobot extends SelectedView {
         var newAngle = (int) Double.parseDouble(fieldSetAngle.getText());
         var newVelocity = Double.parseDouble(fieldSetVelocity.getText());
         var newRotationAngle = (int) Double.parseDouble(fieldSetRotationAngle.getText());
+        var newColor = getRobotColor(this.colorComboBox);
         Robot robot = robotView.getRobot();
 
         //if there is no changes don't update anything
         if (newX == robot.getPosition().getX() && newY == robot.getPosition().getY()
             && newAngle == robot.angle() && newVelocity == robot.getVelocity()
-            && newRotationAngle == robot.getRotationAngle()) return;
+            && newRotationAngle == robot.getRotationAngle() && newColor == robot.getColor()) return;
 
         //TODO: update robot in environment
-        var configuration = new ObjectConfiguration(newX, newY, newAngle, newVelocity, newRotationAngle);
+        var configuration = new ObjectConfiguration(newX, newY, newAngle, newVelocity, newRotationAngle, newColor);
         environmentManager.updateRobot(robot, configuration);
     }
 

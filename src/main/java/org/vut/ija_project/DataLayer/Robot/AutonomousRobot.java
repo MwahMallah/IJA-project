@@ -18,6 +18,7 @@ public class AutonomousRobot implements Robot {
     private int turningAngle;
     private double maxDistanceFromBlock;
     private Direction turningDirection;
+    private RobotColor color;
 
     public enum Direction {
         COUNTERCLOCKWISE,
@@ -33,12 +34,14 @@ public class AutonomousRobot implements Robot {
         this.maxDistanceFromBlock = this.velocity;
         this.turningAngle = 5;
         this.turningDirection = Direction.CLOCKWISE;
+        this.color = RobotColor.RED;
         addObserver(env);
     }
 
-    public AutonomousRobot(Environment env, Position pos, int angle, int turningAngle) {
+    public AutonomousRobot(Environment env, Position pos, int angle, int turningAngle, RobotColor color) {
         this(env, pos, angle);
         this.turningAngle = turningAngle;
+        this.color = color;
     }
 
     public static AutonomousRobot create(Environment env, Position pos) {
@@ -50,11 +53,11 @@ public class AutonomousRobot implements Robot {
         return newRobot;
     }
 
-    public static AutonomousRobot create(Environment env, Position pos, int angle, int rotateAngle) {
+    public static AutonomousRobot create(Environment env, Position pos, int angle, int rotateAngle, RobotColor color) {
         if (env == null || pos == null) return null;
         if (env.obstacleAt(pos) || env.robotAt(pos)) return null;
 
-        AutonomousRobot newRobot = new AutonomousRobot(env, pos, angle, rotateAngle);
+        AutonomousRobot newRobot = new AutonomousRobot(env, pos, angle, rotateAngle, color);
         env.addRobot(newRobot);
         return newRobot;
     }
@@ -131,7 +134,7 @@ public class AutonomousRobot implements Robot {
 
     @Override
     public Robot copy(Environment env) {
-        return new AutonomousRobot(env, this.pos, this.angle, this.turningAngle);
+        return new AutonomousRobot(env, this.pos, this.angle, this.turningAngle, this.color);
     }
 
     @Override
@@ -149,6 +152,7 @@ public class AutonomousRobot implements Robot {
         velocity = configuration.newVelocity;
         maxDistanceFromBlock = velocity;
         turningAngle = configuration.newRotationAngle;
+        color = configuration.newColor;
     }
 
     @Override
@@ -158,6 +162,12 @@ public class AutonomousRobot implements Robot {
 
     @Override
     public RobotType getType() {return RobotType.AUTONOMOUS;}
+
+    @Override
+    public RobotColor getColor() {
+        System.out.println(this.color);
+        return this.color;
+    }
 
     @Override
     public void addObserver(Observer observer) {
