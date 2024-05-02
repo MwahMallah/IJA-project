@@ -34,21 +34,21 @@ public class FileEnvironmentReader
                     if (!Objects.equals(record.get("type"), "e"))
                         throw new RuntimeException("there is no Environment specifier");
 
-                    int x = Integer.parseInt(record.get("x"));
-                    int y = Integer.parseInt(record.get("y"));
+                    double x = Double.parseDouble(record.get("x"));
+                    double y = Double.parseDouble(record.get("y"));
                     environment = Room.create(x, y);
                     isFirst = false;
                 } else {
                     ObjectType type = GetType(record.get("type"));
                     if (type == ObjectType.NOT_FOUND) throw new RuntimeException("Unknown type: " + record.get("type"));
-                    int x = Integer.parseInt(record.get("x"));
-                    int y = Integer.parseInt(record.get("y"));
+                    double x = Double.parseDouble(record.get("x"));
+                    double y = Double.parseDouble(record.get("y"));
+                    int angle = Integer.parseInt(record.get("angle"));
+                    int angleRotate = Integer.parseInt(record.get("rotate_angle"));
 
-                    addObjectToEnvironment(type, x, y);
+                    addObjectToEnvironment(type, x, y, angle, angleRotate);
                 }
             }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -66,11 +66,11 @@ public class FileEnvironmentReader
         };
     }
 
-    private static void addObjectToEnvironment(ObjectType type, int x, int y) {
+    private static void addObjectToEnvironment(ObjectType type, double x, double y, int angle, int rotateAngle) {
         switch (type) {
             case OBSTACLE -> environment.createObstacleAt(y, x);
-            case CONTROLLED_ROBOT -> ControlledRobot.create(environment, new Position(y, x));
-            case AUTONOMOUS_ROBOT -> AutonomousRobot.create(environment, new Position(y, x));
+            case CONTROLLED_ROBOT -> ControlledRobot.create(environment, new Position(y, x), angle);
+            case AUTONOMOUS_ROBOT -> AutonomousRobot.create(environment, new Position(y, x), angle, rotateAngle);
             default -> {}
         }
     }

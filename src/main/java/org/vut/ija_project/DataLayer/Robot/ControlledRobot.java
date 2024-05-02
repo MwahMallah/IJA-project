@@ -35,11 +35,25 @@ public class ControlledRobot implements Robot {
         currState = State.NOTHING;
     }
 
+    private ControlledRobot(Environment env, Position pos, int angle) {
+        this(env, pos);
+        this.angle = angle;
+    }
+
     public static ControlledRobot create(Environment env, Position pos) {
         if (env == null || pos == null) return null;
         if (env.obstacleAt(pos) || env.robotAt(pos)) return null;
 
         ControlledRobot newRobot = new ControlledRobot(env, pos);
+        env.addRobot(newRobot);
+        return newRobot;
+    }
+
+    public static ControlledRobot create(Environment env, Position pos, int angle) {
+        if (env == null || pos == null) return null;
+        if (env.obstacleAt(pos) || env.robotAt(pos)) return null;
+
+        ControlledRobot newRobot = new ControlledRobot(env, pos, angle);
         env.addRobot(newRobot);
         return newRobot;
     }
@@ -96,7 +110,7 @@ public class ControlledRobot implements Robot {
 
     @Override
     public Robot copy(Environment env) {
-        return new ControlledRobot(env, this.pos);
+        return new ControlledRobot(env, this.pos, angle);
     }
 
     //TODO: change velocity

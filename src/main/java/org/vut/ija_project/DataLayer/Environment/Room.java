@@ -21,7 +21,7 @@ public class Room implements Environment {
         obstaclesInRoom = new ArrayList<Obstacle>();
     }
 
-    public static Room create(int rows, int cols) {
+    public static Room create(double rows, double cols) {
         if (rows <= 0 || cols <= 0) {
             throw new IllegalArgumentException("Number of rows and cols must be greater than zero.");
         }

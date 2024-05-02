@@ -36,11 +36,25 @@ public class AutonomousRobot implements Robot {
         addObserver(env);
     }
 
+    public AutonomousRobot(Environment env, Position pos, int angle, int turningAngle) {
+        this(env, pos, angle);
+        this.turningAngle = turningAngle;
+    }
+
     public static AutonomousRobot create(Environment env, Position pos) {
         if (env == null || pos == null) return null;
         if (env.obstacleAt(pos) || env.robotAt(pos)) return null;
 
         AutonomousRobot newRobot = new AutonomousRobot(env, pos, 0);
+        env.addRobot(newRobot);
+        return newRobot;
+    }
+
+    public static AutonomousRobot create(Environment env, Position pos, int angle, int rotateAngle) {
+        if (env == null || pos == null) return null;
+        if (env.obstacleAt(pos) || env.robotAt(pos)) return null;
+
+        AutonomousRobot newRobot = new AutonomousRobot(env, pos, angle, rotateAngle);
         env.addRobot(newRobot);
         return newRobot;
     }
@@ -117,7 +131,7 @@ public class AutonomousRobot implements Robot {
 
     @Override
     public Robot copy(Environment env) {
-        return new AutonomousRobot(env, this.pos, this.angle);
+        return new AutonomousRobot(env, this.pos, this.angle, this.turningAngle);
     }
 
     @Override
