@@ -5,7 +5,7 @@ import org.vut.ija_project.Common.ObjectConfiguration;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Environment.Environment;
 import org.vut.ija_project.DataLayer.Environment.Room;
-import org.vut.ija_project.DataLayer.FileReader.FileEnvironmentReader;
+import org.vut.ija_project.DataLayer.EnvironmentFileIo.EnvironmentFileIO;
 import org.vut.ija_project.DataLayer.Obstacle.Obstacle;
 import org.vut.ija_project.DataLayer.Robot.AutonomousRobot;
 import org.vut.ija_project.DataLayer.Robot.ControlledRobot;
@@ -148,11 +148,11 @@ public class EnvironmentManager
         //backup environment, if something went wrong
         Environment backupEnvironment = this.currEnvironment.copy();
         try {
-            Environment environmentFromFile = FileEnvironmentReader.createEnvironmentFromSource(chosenFile);
+            Environment environmentFromFile = EnvironmentFileIO.createEnvironmentFromSource(chosenFile);
             //delete everything from current main view
-            deleteEverythingFromRoomView();
+            deleteEverythingFromMainView();
 
-            this.initialEnvironment = environmentFromFile;
+            this.initialEnvironment = environmentFromFile.copy();
             this.currEnvironment = this.initialEnvironment.copy();
             //add everything from file's environment
             this.currEnvironment.robots().forEach(r->mainView.addRobot(r));
@@ -166,15 +166,19 @@ public class EnvironmentManager
     }
 
     public void createEnvironment(double y, double x) {
-        deleteEverythingFromRoomView();
+        deleteEverythingFromMainView();
         this.initialEnvironment = Room.create(y, x);
         this.currEnvironment = this.initialEnvironment.copy();
         mainView.update();
     }
 
-    private void deleteEverythingFromRoomView() {
+    private void deleteEverythingFromMainView() {
         //delete everything from current main view
         this.currEnvironment.robots().forEach(r->mainView.deleteRobot(r));
         this.currEnvironment.obstacles().forEach(o->mainView.deleteObstacle(o));
+    }
+
+    public void exportEnvironmentToCsv(File chosenFile) {
+        EnvironmentFileIO.createFileFromEnvironment(this.currEnvironment, chosenFile);
     }
 }

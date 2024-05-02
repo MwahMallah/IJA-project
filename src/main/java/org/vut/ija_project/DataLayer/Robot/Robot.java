@@ -30,7 +30,7 @@ public interface Robot extends Observable {
     public Robot copy(Environment env);
     public double getVelocity();
 
-    public double getRotationAngle();
+    public int getRotationAngle();
     public void setConfiguration(ObjectConfiguration configuration);
     public double getRobotSize();
     public RobotType getType();

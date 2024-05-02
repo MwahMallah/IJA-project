@@ -68,7 +68,6 @@ public class ObstacleView implements SelectableView {
 
     @Override
     public void setSelected(boolean isSelected) {
-        if (isSelected) System.out.println("Selected");
         this.selected = isSelected;
     }
 

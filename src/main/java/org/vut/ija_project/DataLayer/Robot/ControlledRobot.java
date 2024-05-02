@@ -124,7 +124,7 @@ public class ControlledRobot implements Robot {
     }
 
     @Override
-    public double getRotationAngle() {
+    public int getRotationAngle() {
         return 0;
     }
 

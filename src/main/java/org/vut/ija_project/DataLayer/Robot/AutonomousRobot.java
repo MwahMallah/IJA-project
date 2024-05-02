@@ -141,7 +141,7 @@ public class AutonomousRobot implements Robot {
     public double getVelocity() {return velocity;}
 
     @Override
-    public double getRotationAngle() {
+    public int getRotationAngle() {
         return turningAngle;
     }
 
@@ -165,7 +165,6 @@ public class AutonomousRobot implements Robot {
 
     @Override
     public RobotColor getColor() {
-        System.out.println(this.color);
         return this.color;
     }
 

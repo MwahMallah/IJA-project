@@ -9,6 +9,9 @@ import javafx.stage.Stage;
 import org.vut.ija_project.BusinessLayer.EnvironmentManager;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class MenuView extends MenuBar {
     private final Stage stage;
@@ -19,25 +22,35 @@ public class MenuView extends MenuBar {
         this.stage = stage;
 
         Menu fileMenu = new Menu("File");
-        MenuItem openItem = new MenuItem("Open existing environment");
-        MenuItem exitItem = new MenuItem("Save current environment");
-        fileMenu.getItems().addAll(openItem, exitItem);
+        MenuItem openEnvMenu = new MenuItem("Open existing environment");
+        MenuItem saveEnvMenu = new MenuItem("Save current environment");
+        fileMenu.getItems().addAll(openEnvMenu, saveEnvMenu);
 
-        openItem.setOnAction(this::openFile);
+        openEnvMenu.setOnAction(this::openFile);
+        saveEnvMenu.setOnAction(this::saveEnvironment);
 
         this.getMenus().add(fileMenu);
+    }
+
+    private void saveEnvironment(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose File to save environment to");
+
+        chosenFile = fileChooser.showSaveDialog(stage);
+
+        if (chosenFile != null) {
+            environmentManager.exportEnvironmentToCsv(chosenFile);
+        }
     }
 
     private void openFile(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Environment File");
 
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("ENV files (*.env)", "*.env*");
-        fileChooser.getExtensionFilters().add(extFilter);
-
         chosenFile = fileChooser.showOpenDialog(stage);
-        if (chosenFile == null) return;
-        
-        environmentManager.getEnvironmentFromFile(chosenFile);
+
+        if (chosenFile != null) {
+            environmentManager.getEnvironmentFromFile(chosenFile);
+        }
     }
 }

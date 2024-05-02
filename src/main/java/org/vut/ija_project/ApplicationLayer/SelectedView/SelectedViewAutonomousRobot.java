@@ -55,12 +55,24 @@ public class SelectedViewAutonomousRobot extends SelectedView {
                 Double.toString(robotView.getRobot().getRotationAngle()));
 
         colorComboBox = createNewColorComboBox();
-        colorComboBox.getSelectionModel().select("Red");
+        colorComboBox.getSelectionModel().select(getColorText());
 
         addUpdateDeleteButtons();
 
         deleteButton.setOnAction(this::handleDelete);
         updateButton.setOnAction(this::handleUpdateButton);
+    }
+
+    private String getColorText() {
+        return switch (robotView.getRobot().getColor()) {
+            case RED -> "Red";
+            case ORANGE -> "Orange";
+            case YELLOW -> "Yellow";
+            case GREEN -> "Green";
+            case BLUE -> "Blue";
+            case PURPLE -> "Purple";
+            case WHITE -> "White";
+        };
     }
 
     @Override
