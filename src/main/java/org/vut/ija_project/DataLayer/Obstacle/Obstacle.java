@@ -15,6 +15,8 @@ public class Obstacle {
     }
 
     public Position getPosition() {
+        System.out.println(pos);
+
         return pos;
     }
 

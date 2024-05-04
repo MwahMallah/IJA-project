@@ -10,7 +10,7 @@ import org.vut.ija_project.DataLayer.Robot.Robot;
 import org.vut.ija_project.DataLayer.Robot.RobotColor;
 import org.vut.ija_project.DataLayer.Robot.RobotType;
 
-public class RobotView implements SelectableView {
+public class RobotView implements SelectableView, DraggableView {
     private final Robot robot;
     private final CanvasView canvasView;
     private double scaledImageWidth;
@@ -142,4 +142,21 @@ public class RobotView implements SelectableView {
     public Robot getRobot() {
         return this.robot;
     }
+
+    @Override
+    public void drawAt(double x, double y) {
+        //center the obstacle's image
+        double offsetX = -scaledImageWidth / 2;
+        double offsetY = -scaledImageHeight / 2;
+
+        // Set the glow effect
+        gc.setEffect(getShadow());
+
+        gc.drawImage(robotImage,
+                x + offsetX, y + offsetY, scaledImageWidth, scaledImageHeight);
+        gc.setEffect(null);
+    }
+
+    @Override
+    public String getType() {return "Robot";}
 }

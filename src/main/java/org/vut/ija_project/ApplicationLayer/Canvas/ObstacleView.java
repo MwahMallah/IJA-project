@@ -7,7 +7,7 @@ import org.vut.ija_project.BusinessLayer.EnvironmentManager;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Obstacle.Obstacle;
 
-public class ObstacleView implements SelectableView {
+public class ObstacleView implements SelectableView, DraggableView {
     private final double scaledImageWidth;
     private final double scaledImageHeight;
     private Obstacle obstacle;
@@ -82,4 +82,25 @@ public class ObstacleView implements SelectableView {
     }
 
     public Obstacle getObstacle() {return obstacle;}
+
+    @Override
+    public void drawAt(double x, double y) {
+        //center the obstacle's image
+        double offsetX = -scaledImageWidth / 2;
+        double offsetY = -scaledImageHeight / 2;
+
+        DropShadow glow = new DropShadow();
+        glow.setColor(Color.GREEN);
+        glow.setRadius(15);
+        glow.setSpread(0.1);
+        // Set the glow effect
+        canvasView.getContext().setEffect(glow);
+
+        canvasView.getContext().drawImage(obstacleImage,
+                x + offsetX, y + offsetY, scaledImageWidth, scaledImageHeight);
+        canvasView.getContext().setEffect(null);
+    }
+
+    @Override
+    public String getType() {return "Obstacle";}
 }

@@ -11,11 +11,12 @@ import javafx.scene.paint.Color;
 import org.vut.ija_project.ApplicationLayer.MainView;
 import org.vut.ija_project.ApplicationLayer.SelectedView.SelectedView;
 import org.vut.ija_project.ApplicationLayer.SelectedView.SelectedViewFactory;
-import org.vut.ija_project.ApplicationLayer.SelectedView.SelectedViewObstacle;
 import org.vut.ija_project.BusinessLayer.EnvironmentManager;
+import org.vut.ija_project.Common.ObjectConfiguration;
 import org.vut.ija_project.DataLayer.Obstacle.Obstacle;
 import org.vut.ija_project.DataLayer.Robot.Robot;
 
+import java.lang.module.Configuration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,7 @@ public class CanvasView extends HBox {
     private double cellHeight;
     private List<RobotView> robotViewList;
     private List<ObstacleView> obstacleViewList;
+    private DraggableView dragged;
 
     public CanvasView(EnvironmentManager environmentManager, MainView mainView) {
         robotViewList = new ArrayList<RobotView>();
@@ -49,7 +51,9 @@ public class CanvasView extends HBox {
         canvas.setOnMouseMoved(this::handleMoveMouse);
         canvas.setOnMouseEntered(this::handleEnterMouse);
         canvas.setOnMouseExited(this::handleExitMouse);
-        canvas.setOnMouseClicked(this::handleClickMouse);
+        canvas.setOnMousePressed(this::handlePressMouse);
+        canvas.setOnMouseDragged(this::handleDrag);
+        canvas.setOnMouseReleased(this::handleReleaseMouse);
 
         gc = canvas.getGraphicsContext2D();
         eraseObjects();
@@ -81,8 +85,22 @@ public class CanvasView extends HBox {
         this.cellHeight = canvasHeight / (environmentManager.getHeight() + 1);
         eraseObjects();
 
-        for (var robotView : robotViewList) {robotView.update();}
-        for (var obstacle : obstacleViewList) {obstacle.update();}
+        robotViewList.forEach(RobotView::update);
+        obstacleViewList.forEach(ObstacleView::update);
+    }
+
+
+    private void updateCanvasWithoutDraggedObj(DraggableView dragged) {
+        eraseObjects();
+
+        for (var robotView : robotViewList) {
+            if (robotView == dragged) continue;
+            robotView.update();
+        }
+        for (var obstacleView : obstacleViewList) {
+            if (obstacleView == dragged) continue;
+            obstacleView.update();
+        }
     }
 
     public void addRobot(Robot robot) {
@@ -130,15 +148,19 @@ public class CanvasView extends HBox {
     public void reset() {
         robotViewList = new ArrayList<RobotView>();
         List<Robot> robots = this.environmentManager.getRobots();
-
         for (var robot : robots) {
             addRobot(robot);
         }
 
-        obstacleViewList.forEach(obstacleView -> obstacleView.setSelected(false));
+        obstacleViewList = new ArrayList<ObstacleView>();
+        List<Obstacle> obstacles = this.environmentManager.getObstacles();
+        for (var obstacle: obstacles) {
+            addObstacle(obstacle);
+        }
     }
 
-    private void handleClickMouse(MouseEvent mouseEvent) {
+
+    private void handlePressMouse(MouseEvent mouseEvent) {
         SelectedView selectedView = null;
 
         RobotView selectedRobotView = null;
@@ -159,13 +181,44 @@ public class CanvasView extends HBox {
 
         if (selectedRobotView != null) {
             selectedRobotView.setSelected(true);
+            dragged = selectedRobotView;
             selectedView = SelectedViewFactory.create(selectedRobotView, environmentManager);
         } else if (selectedObstacleView != null) {
             selectedObstacleView.setSelected(true);
+            dragged = selectedObstacleView;
             selectedView = SelectedViewFactory.create(selectedObstacleView, environmentManager);
         }
 
         mainView.setSelected(selectedView);
+    }
+
+    private void handleDrag(MouseEvent mouseEvent) {
+        if (dragged != null) {
+            updateCanvasWithoutDraggedObj(dragged);
+            dragged.drawAt(mouseEvent.getX(), mouseEvent.getY());
+        }
+    }
+
+
+    private void handleReleaseMouse(MouseEvent mouseEvent) {
+        if (dragged == null) {return;}
+
+        int x = (int) (mouseEvent.getX() / cellWidth);
+        int y = (int) (mouseEvent.getY() / cellHeight);
+
+        if (dragged.getType().equals("Obstacle")) {
+            ObstacleView obstacleView = (ObstacleView) dragged;
+            var newObstacleConfiguration = new ObjectConfiguration(x, y);
+            environmentManager.updateObstacle(obstacleView.getObstacle(), newObstacleConfiguration);
+        } else {
+            RobotView robotView = (RobotView) dragged;
+            Robot robot = robotView.getRobot();
+            var newObstacleConfiguration = new ObjectConfiguration(x, y,
+                    robot.angle(), robot.getVelocity(), robot.getRotationAngle(), robot.getColor());
+            environmentManager.updateRobot(robotView.getRobot(), newObstacleConfiguration);
+        }
+
+        dragged = null;
     }
 
     private void handleMoveMouse(MouseEvent mouseEvent) {

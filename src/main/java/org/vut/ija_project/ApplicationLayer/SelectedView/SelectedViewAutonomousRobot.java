@@ -81,6 +81,10 @@ public class SelectedViewAutonomousRobot extends SelectedView {
         this.angleLabel.setText("Current Angle: " + robotView.getRobot().angle());
         this.velocityLabel.setText("Current Velocity: " + robotView.getRobot().getVelocity());
         this.rotationAngleLabel.setText("Current Rotation Angle: " + robotView.getRobot().getRotationAngle());
+
+        this.fieldSetX.setText(getX());
+        this.fieldSetY.setText(getY());
+        this.fieldSetAngle.setText(Double.toString(robotView.getRobot().angle()));
     }
 
     @Override
