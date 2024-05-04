@@ -1,13 +1,12 @@
 package org.vut.ija_project.DataLayer.Environment;
 
 import org.vut.ija_project.DataLayer.Common.Position;
-import org.vut.ija_project.DataLayer.Common.Observer;
 import org.vut.ija_project.DataLayer.Obstacle.Obstacle;
 import org.vut.ija_project.DataLayer.Robot.Robot;
 
 import java.util.List;
 
-public interface Environment extends Observer {
+public interface Environment {
     /*
      * Adds robot to its position
      * @return success of operation

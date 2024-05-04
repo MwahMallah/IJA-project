@@ -8,7 +8,6 @@ import org.vut.ija_project.BusinessLayer.EnvironmentManager;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Robot.Robot;
 import org.vut.ija_project.DataLayer.Robot.RobotColor;
-import org.vut.ija_project.DataLayer.Robot.RobotType;
 
 public class RobotView implements SelectableView, DraggableView {
     private final Robot robot;
@@ -104,13 +103,13 @@ public class RobotView implements SelectableView, DraggableView {
 
     private void getImage() {
         this.robotImage = switch (robot.getColor()) {
-            case RED -> new Image(getClass().getResourceAsStream("/bug_red.png"));
-            case ORANGE -> new Image(getClass().getResourceAsStream("/bug_orange.png"));
-            case YELLOW -> new Image(getClass().getResourceAsStream("/bug_yellow.png"));
-            case GREEN -> new Image(getClass().getResourceAsStream("/bug_green.png"));
-            case BLUE -> new Image(getClass().getResourceAsStream("/bug_blue.png"));
-            case PURPLE -> new Image(getClass().getResourceAsStream("/bug_purple.png"));
-            case WHITE -> new Image(getClass().getResourceAsStream("/bug_white.png"));
+            case RED -> new Image(getClass().getResourceAsStream("/img/bug_red.png"));
+            case ORANGE -> new Image(getClass().getResourceAsStream("/img/bug_orange.png"));
+            case YELLOW -> new Image(getClass().getResourceAsStream("/img/bug_yellow.png"));
+            case GREEN -> new Image(getClass().getResourceAsStream("/img/bug_green.png"));
+            case BLUE -> new Image(getClass().getResourceAsStream("/img/bug_blue.png"));
+            case PURPLE -> new Image(getClass().getResourceAsStream("/img/bug_purple.png"));
+            case WHITE -> new Image(getClass().getResourceAsStream("/img/bug_white.png"));
         };
     }
 

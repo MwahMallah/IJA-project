@@ -1,17 +1,12 @@
 package org.vut.ija_project.DataLayer.Robot;
 
 import org.vut.ija_project.Common.ObjectConfiguration;
-import org.vut.ija_project.DataLayer.Common.Observer;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Environment.Environment;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AutonomousRobot implements Robot {
     private final double robotSize = 1;
     private double velocity;
-    List<Observer> observers;
     private final Environment env;
     private Position pos;
     private int angle;
@@ -26,7 +21,6 @@ public class AutonomousRobot implements Robot {
     }
 
     public AutonomousRobot(Environment env, Position pos, int angle) {
-        observers = new ArrayList<Observer>();
         this.env = env;
         this.pos = pos;
         this.angle = angle;
@@ -35,7 +29,6 @@ public class AutonomousRobot implements Robot {
         this.turningAngle = 5;
         this.turningDirection = Direction.CLOCKWISE;
         this.color = RobotColor.RED;
-        addObserver(env);
     }
 
     public AutonomousRobot(Environment env, Position pos, int angle, int turningAngle, RobotColor color) {
@@ -87,7 +80,6 @@ public class AutonomousRobot implements Robot {
         if (!canMove()) return false;
 
         pos = getTargetPosition();
-        notifyObservers();
         return true;
     }
 
@@ -129,7 +121,6 @@ public class AutonomousRobot implements Robot {
     @Override
     public void updatePosition() {
         if (!move()) turn();
-        notifyObservers();
     }
 
     @Override
@@ -166,22 +157,5 @@ public class AutonomousRobot implements Robot {
     @Override
     public RobotColor getColor() {
         return this.color;
-    }
-
-    @Override
-    public void addObserver(Observer observer) {
-        observers.add(observer);
-    }
-
-    @Override
-    public void removeObserver(Observer observer) {
-        observers.remove(observer);
-    }
-
-    @Override
-    public void notifyObservers() {
-        for (Observer o : observers) {
-            o.update(this);
-        }
     }
 }

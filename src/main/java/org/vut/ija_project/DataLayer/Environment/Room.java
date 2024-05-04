@@ -1,6 +1,5 @@
 package org.vut.ija_project.DataLayer.Environment;
 
-import org.vut.ija_project.DataLayer.Common.Observable;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Obstacle.Obstacle;
 import org.vut.ija_project.DataLayer.Robot.Robot;
@@ -133,11 +132,6 @@ public class Room implements Environment {
 
     @Override
     public List<Obstacle> obstacles() {return new ArrayList<Obstacle>(obstaclesInRoom);}
-
-    @Override
-    public void update(Observable observable) {
-
-    }
 
     @Override
     public Environment copy() {

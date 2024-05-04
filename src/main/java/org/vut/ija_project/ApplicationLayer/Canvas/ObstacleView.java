@@ -22,7 +22,7 @@ public class ObstacleView implements SelectableView, DraggableView {
         this.obstacle = obstacle;
         this.canvasView = canvasView;
         this.environmentManager = environmentManager;
-        this.obstacleImage = new Image(getClass().getResourceAsStream("/bush.png"));
+        this.obstacleImage = new Image(getClass().getResourceAsStream("/img/bush.png"));
         this.selected = false;
 
         double imageScaleX = canvasView.getCellWidth() / obstacleImage.getWidth();

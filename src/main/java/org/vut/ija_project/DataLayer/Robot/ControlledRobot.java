@@ -1,16 +1,11 @@
 package org.vut.ija_project.DataLayer.Robot;
 
 import org.vut.ija_project.Common.ObjectConfiguration;
-import org.vut.ija_project.DataLayer.Common.Observer;
 import org.vut.ija_project.DataLayer.Common.Position;
 import org.vut.ija_project.DataLayer.Environment.Environment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ControlledRobot implements Robot {
     private double velocity;
-    List<Observer> observers;
     private final Environment env;
     private Position pos;
     private int angle;
@@ -26,14 +21,12 @@ public class ControlledRobot implements Robot {
     }
 
     private ControlledRobot(Environment env, Position pos) {
-        observers = new ArrayList<Observer>();
         this.env = env;
         this.pos = pos;
         this.angle = 0;
         this.robotSize = 1;
         this.velocity = 0.1;
         this.color = RobotColor.YELLOW;
-        addObserver(env);
         currState = State.NOTHING;
     }
 
@@ -69,13 +62,11 @@ public class ControlledRobot implements Robot {
     private void turnClockWise() {
         angle = (angle + 45) % 360;
         currState = State.NOTHING;
-        notifyObservers();
     }
 
     private void turnCounterClockwise() {
         angle = (angle - 45 + 360) % 360;
         currState = State.NOTHING;
-        notifyObservers();
     }
 
     @Override
@@ -157,24 +148,5 @@ public class ControlledRobot implements Robot {
 
         pos = getTargetPosition();
         currState = State.NOTHING;
-        notifyObservers();
     }
-
-    @Override
-    public void addObserver(Observer observer) {
-        observers.add(observer);
-    }
-
-    @Override
-    public void removeObserver(Observer observer) {
-        observers.remove(observer);
-    }
-
-    @Override
-    public void notifyObservers() {
-        for (Observer o : observers) {
-            o.update(this);
-        }
-    }
-
 }
