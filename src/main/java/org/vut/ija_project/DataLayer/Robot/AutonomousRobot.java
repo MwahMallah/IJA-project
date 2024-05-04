@@ -46,7 +46,7 @@ public class AutonomousRobot implements Robot {
 
     public static AutonomousRobot create(Environment env, Position pos) {
         if (env == null || pos == null) return null;
-        if (env.obstacleAt(pos) || env.robotAt(pos)) return null;
+        if (!env.containsPosition(pos) ||env.obstacleAt(pos) || env.robotAt(pos)) return null;
 
         AutonomousRobot newRobot = new AutonomousRobot(env, pos, 0);
         env.addRobot(newRobot);

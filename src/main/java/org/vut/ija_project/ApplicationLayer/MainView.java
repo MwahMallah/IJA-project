@@ -1,5 +1,6 @@
 package org.vut.ija_project.ApplicationLayer;
 
+import javafx.scene.control.Alert;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -69,5 +70,12 @@ public class MainView extends HBox
     public void deleteObstacle(Obstacle obstacle) {
         canvasView.removeObstacle(obstacle);
         informationView.setSelected(null);
+    }
+
+    public void showError(String errorMsg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(null);
+        alert.setContentText(errorMsg);
+        alert.showAndWait();
     }
 }

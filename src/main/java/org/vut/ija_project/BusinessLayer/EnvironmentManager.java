@@ -34,39 +34,6 @@ public class EnvironmentManager
         this.mainView = mainView;
     }
 
-    public void addRobot(double y, double x, String type) {
-        Position newRobotPos = new Position(y, x);
-        Robot newRobot = null;
-
-        if (type.equals("Autonomous")) {
-            newRobot = AutonomousRobot.create(currEnvironment, newRobotPos);
-        } else if (type.equals("Controllable")) {
-            newRobot = ControlledRobot.create(currEnvironment, newRobotPos);
-        }
-
-        if (newRobot == null) {
-            System.out.println("Robot is not created");
-            throw new RuntimeException("Invalid position");
-        }
-
-        //if we want to add robot, make current environment position initial
-        this.initialEnvironment = this.currEnvironment.copy();
-        mainView.addRobot(newRobot);
-    }
-
-    public void addObstacle(double y, double x) {
-        Obstacle created = this.currEnvironment.createObstacleAt(y, x);
-
-        if (created == null) {
-            System.out.println("Obstacle is not created");
-            throw new RuntimeException("Invalid position");
-        }
-
-        //if we want to add obstacle, make current environment position initial
-        this.initialEnvironment = this.currEnvironment.copy();
-        mainView.addObstacle(created);
-    }
-
     public void simulationReset() {
         this.currEnvironment = this.initialEnvironment.copy();
         mainView.reset();
@@ -101,6 +68,41 @@ public class EnvironmentManager
 
     public List<Obstacle> getObstacles() {return this.currEnvironment.obstacles();}
 
+    public void addRobot(double y, double x, String type) {
+        Position newRobotPos = new Position(y, x);
+        Robot newRobot = null;
+
+        if (type.equals("Autonomous")) {
+            newRobot = AutonomousRobot.create(currEnvironment, newRobotPos);
+        } else if (type.equals("Controllable")) {
+            newRobot = ControlledRobot.create(currEnvironment, newRobotPos);
+        }
+
+        if (newRobot == null) {
+            System.out.println("Robot is not created");
+            mainView.showError("Invalid robot's position");
+            return;
+        }
+
+        //if we want to add robot, make current environment position initial
+        this.initialEnvironment = this.currEnvironment.copy();
+        mainView.addRobot(newRobot);
+    }
+
+    public void addObstacle(double y, double x) {
+        Obstacle created = this.currEnvironment.createObstacleAt(y, x);
+
+        if (created == null) {
+            System.out.println("Robot is not created");
+            mainView.showError("Invalid obstacle's position");
+            return;
+        }
+
+        //if we want to add obstacle, make current environment position initial
+        this.initialEnvironment = this.currEnvironment.copy();
+        mainView.addObstacle(created);
+    }
+
     public void deleteRobot(Robot robot) {
         this.currEnvironment.removeRobot(robot);
 
@@ -109,6 +111,12 @@ public class EnvironmentManager
     }
 
     public void updateRobot(Robot robot, ObjectConfiguration configuration) {
+        if (!isConfigurationPositionValid(configuration)) {
+            System.out.println("Robot is not updated");
+            mainView.showError("Invalid robot's position");
+            return;
+        }
+
         robot.setConfiguration(configuration);
 
         this.initialEnvironment = this.currEnvironment.copy();
@@ -123,10 +131,22 @@ public class EnvironmentManager
     }
 
     public void updateObstacle(Obstacle obstacle, ObjectConfiguration configuration) {
+        if (!isConfigurationPositionValid(configuration)) {
+            System.out.println("Obstacle is not updated");
+            mainView.showError("Invalid obstacle's position");
+            return;
+        }
+
         obstacle.setConfiguration(configuration);
 
         this.initialEnvironment = this.currEnvironment.copy();
         mainView.update();
+    }
+
+    private boolean isConfigurationPositionValid(ObjectConfiguration configuration) {
+        Position newPos = new Position(configuration.newY, configuration.newX);
+        return this.currEnvironment.containsPosition(newPos)
+                && !this.currEnvironment.obstacleAt(newPos) && !this.currEnvironment.robotAt(newPos);
     }
 
     public void turnControlledRobotCounterClockwise(Robot robot) {

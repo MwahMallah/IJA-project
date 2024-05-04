@@ -46,7 +46,7 @@ public class ControlledRobot implements Robot {
 
     public static ControlledRobot create(Environment env, Position pos) {
         if (env == null || pos == null) return null;
-        if (env.obstacleAt(pos) || env.robotAt(pos)) return null;
+        if (!env.containsPosition(pos) || env.obstacleAt(pos) || env.robotAt(pos)) return null;
 
         ControlledRobot newRobot = new ControlledRobot(env, pos);
         env.addRobot(newRobot);
