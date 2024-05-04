@@ -1,6 +1,5 @@
 package org.vut.ija_project.DataLayer.Robot;
 
-import javafx.scene.paint.Color;
 import org.vut.ija_project.Common.ObjectConfiguration;
 import org.vut.ija_project.DataLayer.Common.Observer;
 import org.vut.ija_project.DataLayer.Common.Position;

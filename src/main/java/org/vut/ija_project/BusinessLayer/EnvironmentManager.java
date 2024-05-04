@@ -111,7 +111,7 @@ public class EnvironmentManager
     }
 
     public void updateRobot(Robot robot, ObjectConfiguration configuration) {
-        if (!isConfigurationPositionValid(configuration)) {
+        if (!isConfigurationPositionValid(configuration, robot)) {
             System.out.println("Robot is not updated");
             mainView.showError("Invalid robot's position");
             return;
@@ -131,7 +131,7 @@ public class EnvironmentManager
     }
 
     public void updateObstacle(Obstacle obstacle, ObjectConfiguration configuration) {
-        if (!isConfigurationPositionValid(configuration)) {
+        if (!isConfigurationPositionValid(configuration, null)) {
             System.out.println("Obstacle is not updated");
             mainView.showError("Invalid obstacle's position");
             return;
@@ -143,10 +143,10 @@ public class EnvironmentManager
         mainView.update();
     }
 
-    private boolean isConfigurationPositionValid(ObjectConfiguration configuration) {
+    private boolean isConfigurationPositionValid(ObjectConfiguration configuration, Robot excludingRobot) {
         Position newPos = new Position(configuration.newY, configuration.newX);
         return this.currEnvironment.containsPosition(newPos)
-                && !this.currEnvironment.obstacleAt(newPos) && !this.currEnvironment.robotAt(newPos);
+                && !this.currEnvironment.obstacleAt(newPos) && !this.currEnvironment.robotAt(newPos, excludingRobot);
     }
 
     public void turnControlledRobotCounterClockwise(Robot robot) {
