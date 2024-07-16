@@ -9,10 +9,10 @@ Check out how our UI looks in action! 👀✨
 
 ![Demo of the project](images/bugs-simulation-demo.mp4)
 
-Tests:
+## Tests:
     mvn clean compile
     mvn test
 
-Application:
+## Application:
     mvn clean compile
     mvn javafx:run
